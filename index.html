@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leo Yu-Chieh Lee 李祐頡</title>
+<meta name="description" content="李祐頡 Leo Yu-Chieh Lee — 國立臺灣大學經濟學系。研究計畫、專欄文章、微積分教學與排球裁判紀錄。">
+<meta property="og:title" content="Leo Yu-Chieh Lee 李祐頡">
+<meta property="og:description" content="國立臺灣大學經濟學系 · C2L2 Laboratory 兼任研究助理">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Noto+Serif+TC:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ===== 顏色與字型：要換風格，改這裡就好 ===== */
+  :root{
+    --bg:#FBFAF7;
+    --text:#1F2328;
+    --muted:#5F6670;
+    --faint:#8A9099;
+    --line:#E4E1DA;
+    --accent:#1E3A5F;      /* 主色：深藍 */
+    --accent-soft:#E8EEF5;
+    --serif:'Source Serif 4','Noto Serif TC',Georgia,serif;
+    --sans:'Inter','Noto Sans TC',-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#16181C; --text:#E6E4DF; --muted:#A3A7AE; --faint:#7C818A;
+      --line:#2C3036; --accent:#9DB8DA; --accent-soft:#1F2833;
+    }
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--serif); font-size:17px; line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:var(--accent); text-decoration:none; border-bottom:1px solid transparent; transition:border-color .15s; }
+  a:hover{ border-bottom-color:currentColor; }
+  .wrap{ max-width:780px; margin:0 auto; padding:0 24px; }
+
+  /* ===== 導覽列 ===== */
+  header{
+    position:sticky; top:0; z-index:10;
+    background:color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 24px; flex-wrap:wrap; }
+  .brand{ font-family:var(--serif); font-weight:600; font-size:18px; color:var(--text); border:0; cursor:pointer; }
+  .brand span{ color:var(--faint); font-weight:400; margin-left:4px; }
+  .nav ul{ list-style:none; margin:0; padding:0; display:flex; gap:22px; flex-wrap:wrap; }
+  .nav ul a{ font-family:var(--sans); font-size:14px; color:var(--muted); padding-bottom:2px; cursor:pointer; }
+  .nav ul a.active{ color:var(--text); border-bottom:2px solid var(--accent); }
+
+  /* ===== 區塊 ===== */
+  main.wrap{ padding-top:48px; padding-bottom:32px; min-height:60vh; }
+  section{ display:none; }
+  section.active{ display:block; animation:fade .25s ease; }
+  @keyframes fade{ from{ opacity:0; transform:translateY(4px);} to{ opacity:1; transform:none; } }
+
+  h1{ font-size:32px; font-weight:600; line-height:1.25; margin:0 0 8px; letter-spacing:-.01em; }
+  h2{
+    font-family:var(--sans); font-size:13px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--accent); margin:44px 0 14px; padding-bottom:8px; border-bottom:1px solid var(--line);
+  }
+  h3{ font-family:var(--sans); font-size:14px; font-weight:600; color:var(--muted); margin:26px 0 8px; }
+  .lead{ color:var(--muted); margin:0 0 8px; }
+
+  /* ===== 首頁 ===== */
+  .profile{ display:grid; grid-template-columns:180px 1fr; gap:36px; align-items:start; }
+  .profile img{ width:180px; height:220px; object-fit:cover; border-radius:4px; background:var(--line); display:block; }
+  .roles{ list-style:none; padding:0; margin:14px 0 22px; }
+  .roles li{ padding:3px 0; }
+  .roles li::before{ content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); margin:0 10px 2px 0; }
+  .about{ margin:0 0 22px; }
+  .links{ display:flex; flex-wrap:wrap; gap:10px; font-family:var(--sans); font-size:14px; }
+  .links a{ border:1px solid var(--line); padding:6px 14px; border-radius:20px; color:var(--text); }
+  .links a:hover{ border-color:var(--accent); color:var(--accent); }
+  .links a.primary{ background:var(--accent); border-color:var(--accent); color:var(--bg); }
+  .contact{ font-family:var(--sans); font-size:14px; color:var(--muted); margin-top:18px; }
+
+  /* ===== 列表 ===== */
+  .list{ list-style:none; padding:0; margin:0; }
+  .list li{ padding:10px 0; border-bottom:1px solid var(--line); }
+  .list li:last-child{ border-bottom:0; }
+  .title{ font-weight:600; }
+  .meta{ display:block; font-family:var(--sans); font-size:13.5px; color:var(--muted); margin-top:2px; }
+  .tag{
+    display:inline-block; font-family:var(--sans); font-size:11px; font-weight:500; letter-spacing:.03em;
+    padding:1px 8px; border-radius:10px; background:var(--accent-soft); color:var(--accent); margin-left:6px; vertical-align:2px;
+  }
+  .term{ font-family:var(--sans); font-size:13px; font-weight:600; color:var(--faint); margin:22px 0 2px; }
+  .more{ font-family:var(--sans); font-size:14px; margin-top:12px; }
+
+  /* 裁判紀錄 */
+  .log li{ display:grid; grid-template-columns:96px 1fr; gap:14px; }
+  .log .date{ font-family:var(--sans); font-size:13.5px; color:var(--faint); padding-top:2px; }
+
+  /* 照片牆 */
+  .gallery{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:24px; }
+  .gallery figure{ margin:0; }
+  .gallery img{ width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:4px; display:block; background:var(--line); }
+  .gallery figcaption{ font-family:var(--sans); font-size:12.5px; color:var(--muted); margin-top:4px; }
+
+  footer{ border-top:1px solid var(--line); padding:24px 0 40px; font-family:var(--sans); font-size:13px; color:var(--faint); }
+
+  /* ===== 手機 ===== */
+  @media (max-width:640px){
+    body{ font-size:16px; }
+    main.wrap{ padding-top:32px; }
+    .nav{ gap:8px; padding:12px 20px; }
+    .nav ul{ gap:6px 16px; }
+    .nav ul a{ font-size:13.5px; }
+    .profile{ grid-template-columns:1fr; gap:20px; }
+    .profile img{ width:140px; height:170px; }
+    h1{ font-size:27px; }
+    .log li{ grid-template-columns:1fr; gap:0; }
+    .gallery{ grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a class="brand" href="#home" data-page="home"><span id="brand-en" style="color:inherit;margin:0;font-weight:600;"></span><span id="brand-zh"></span></a>
+    <ul>
+      <li><a href="#home" data-page="home">Home</a></li>
+      <li><a href="#articles" data-page="articles">Articles</a></li>
+      <li><a href="#teaching" data-page="teaching">Teaching</a></li>
+      <li><a href="#referee" data-page="referee">Volleyball Referee</a></li>
+      <li><a href="#photography" data-page="photography">Photography</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="page-home"></section>
+  <section id="page-articles"></section>
+  <section id="page-teaching"></section>
+  <section id="page-referee"></section>
+  <section id="page-photography"></section>
+</main>
+
+<footer>
+  <div class="wrap" id="footer"></div>
+</footer>
+
+<script>
+/* ============================================================
+   1 · Google 試算表設定
+   ------------------------------------------------------------
+   把試算表網址中 /d/ 和 /edit 之間那一長串貼在下面引號裡。
+   例：https://docs.google.com/spreadsheets/d/【這一段】/edit
+   試算表要設成「知道連結的任何人 · 檢視者」。
+   留空白就會使用下面內建的內容。
+   ============================================================ */
+var SHEET_ID = "1YcMI4Evd5H16KL8VYSeM0NGNDHOY47w9a5Vdb-Tkd-U";
+
+/* ============================================================
+   2 · 內建內容（試算表讀不到時的備份，欄位名稱和試算表一樣）
+   ============================================================ */
+var DATA = {
+  Settings: [
+    { key: "name_zh",   value: "李祐頡" },
+    { key: "name_en",   value: "Leo Yu-Chieh Lee" },
+    { key: "role1",     value: "國立臺灣大學經濟學系 學士班" },
+    { key: "role2",     value: "C2L2 Laboratory 兼任研究助理" },
+    { key: "role3",     value: "中華民國排球協會 C 級裁判" },
+    { key: "about",     value: "" },
+    { key: "email",     value: "leojoe2580@gmail.com" },
+    { key: "linkedin",  value: "https://www.linkedin.com/in/yu-chieh-lee-b96bb4263/" },
+    { key: "instagram", value: "https://www.instagram.com/tttravellist/" },
+    { key: "instagram_handle", value: "@tttravellist" },
+    { key: "cv_url",    value: "https://4be244f900.cbaul-cdnwnd.com/ce9b81c61c0a1e8340342d4b0bea6df5/200000009-e5690e5692/CV-3.pdf?ph=4be244f900" },
+    { key: "photo_url", value: "https://drive.google.com/file/d/1CJW_D-7bWOP1es6w-sVDtyaPQVL8WI_3/view?usp=sharing" }
+  ],
+  Projects: [
+    { term: "Fall 2026",   title: "Under One Roof: Co-residence with Parents-in-Law and the Child Penalty in Taiwan", url: "", coauthors: "駱立瑄、郭予婕", status: "In progress", home: "yes" },
+    { term: "Spring 2026", title: "Staff Recruitment and Allocation in Camp Organizing", url: "https://drive.google.com/file/d/1c982_8ktnKwNg5QS9JIDNNtnZZgawlk4/view?usp=share_link", coauthors: "高郁涵、蕭宥平、卓育安", status: "", home: "yes" },
+    { term: "Spring 2026", title: "大班課轉為非完全實體授課之節電方案可行性評估", url: "https://drive.google.com/file/d/1p9ammqA1fRNhVewAaJhiJWWK76-Anaqq/view?usp=share_link", coauthors: "陳詠祺、楊莞瑜、葉方叡、蘇靖恩", status: "", home: "" },
+    { term: "Fall 2025",   title: "Allocation Mechanism of Student Exchange Program", url: "https://drive.google.com/file/d/1j1m5HuYWIEsrbMUY3B-hpAZD8wyOsE41/view?usp=share_link", coauthors: "張睿庠、謝子詮、Brieuc Emmanuel R. de le Court", status: "", home: "" },
+    { term: "Fall 2025",   title: "Free Rider Behavior in Group Working", url: "https://drive.google.com/file/d/1Z0if0j9NIbJAuV8wY38W0r1SpAYH50Gu/view?usp=share_link", coauthors: "黃聖硯、黃譓羽、許權麒、賴柏勳、蔡弘毅", status: "", home: "" },
+    { term: "Fall 2025",   title: "YouBike Station Occupancy Rate Analysis", url: "https://drive.google.com/file/d/18S4T5qW3r4B_vpt4Ybj9VHsG8XbDrOE9/view?usp=share_link", coauthors: "陳家弘、詹明翰、黃聖硯、簡文諺、庄鈺瑩", status: "", home: "" },
+    { term: "Spring 2025", title: "廣設大學政策對婚育決策的影響", url: "https://drive.google.com/file/d/1lsmxKWCJkcd874zPr1JLY_p3b0MASrbK/view?usp=sharing", coauthors: "林禎瑭", status: "", home: "yes" }
+  ],
+  Columns: [
+    { title: "大學中的隱性學分：「第一代大學生」在學業與求職的巨大劣勢", url: "https://drive.google.com/file/d/1_KeCZmkmECxsRxkElGeSiIWybfphUc-i/view?usp=share_link", tag: "" },
+    { title: "管制高等教育的隱憂：高教補貼是否是台灣大學研究與教育天秤上的最優解", url: "https://drive.google.com/file/d/1yztjkpIgHq7hmzh2QxEozycB9f771AKa/view?usp=share_link", tag: "" },
+    { title: "淺談節日經濟的無謂損失", url: "https://drive.google.com/file/d/1wGUjjoQ7x2qYG98NAfPt_6qNNAvLRwP5/view?usp=sharing", tag: "" },
+    { title: "淺論台灣匯率政策對國民財富影響", url: "https://drive.google.com/file/d/1Hzn5lMovmgEUg5Aik-aAiSNu0V0eln-m/view?usp=sharing", tag: "" },
+    { title: "配對市場與演算法：婚姻配對的偏好與選擇", url: "https://www.instagram.com/p/DQ4a6fHj6HT/", tag: "Instagram" },
+    { title: "杜鵑花特刊：經濟系課程介紹", url: "https://www.instagram.com/p/DG5UagdS8QZ/", tag: "Instagram" },
+    { title: "節日經濟學：淺談聖誕節的無謂損失", url: "https://www.instagram.com/p/DEMSl0RvnLR/", tag: "Instagram" },
+    { title: "海洋與人類命運的交會—海權經濟大未來", url: "https://www.instagram.com/p/DBVOY-Vyt70/", tag: "Instagram" },
+    { title: "Second 在做什麼？帶你一窺 Second 的構成", url: "https://www.instagram.com/p/C_RjmUNyGA2/", tag: "Instagram" }
+  ],
+  Teaching: [
+    { course: "Calculus, Class 10 · Fall 2025 – Spring 2026", category: "Homework", title: "Calculus 1 Homework 3 (26 Fall)", url: "https://drive.google.com/file/d/1xmnvLQ-iEOvrcfioEDzom9OYCE-LnG2z/view?usp=share_link", tag: "" },
+    { course: "Calculus, Class 11 · Fall 2024 – Spring 2025", category: "Lecture Videos", title: "Calculus 3", url: "https://www.youtube.com/playlist?list=PLZj2zHCMBm3E4-P2C290VccPTSMsxl3D8", tag: "YouTube" },
+    { course: "Calculus, Class 11 · Fall 2024 – Spring 2025", category: "Lecture Videos", title: "Calculus 4 — Applications in Economics and Management", url: "https://www.youtube.com/playlist?list=PLZj2zHCMBm3H3xrqzb3W-N5ARtTlZAMJ3", tag: "YouTube" },
+    { course: "Calculus, Class 11 · Fall 2024 – Spring 2025", category: "Lecture Notes", title: "Calculus 1", url: "https://drive.google.com/drive/folders/1lejvRlRB-pcODtbBrNhYCsACtuD3yqsQ?usp=sharing", tag: "" },
+    { course: "Calculus, Class 11 · Fall 2024 – Spring 2025", category: "Lecture Notes", title: "Calculus 2", url: "https://drive.google.com/file/d/1MHUbird7CVDqRVUbh_w8aY54VSAfnaVJ/view?usp=sharing", tag: "" },
+    { course: "Calculus, Class 11 · Fall 2024 – Spring 2025", category: "Lecture Notes", title: "Calculus 3", url: "https://drive.google.com/drive/folders/1SSBfQf0Kt7aQPxvpsLnoryKLGOIXgDDi?usp=share_link", tag: "" },
+    { course: "Calculus, Class 11 · Fall 2024 – Spring 2025", category: "Lecture Notes", title: "Calculus 4 — Applications in Economics and Management", url: "https://drive.google.com/drive/folders/1bViPfBiZo6Du377mp3uk9nc-CgEBx3Lm?usp=sharing", tag: "" }
+  ],
+  Referee: [
+    { year: "2026", date: "4/25–26",  event: "大環盃", venue: "中原大學", division: "大專男系隊" },
+    { year: "2026", date: "3/21–22",  event: "大獸盃", venue: "嘉義大學", division: "大專男系隊" },
+    { year: "2026", date: "2/7–8",    event: "第三屆超大盃", venue: "元智大學", division: "社女組" },
+    { year: "2025", date: "12/20–21", event: "臺北市中正盃", venue: "三民國小", division: "小五男子組" },
+    { year: "2025", date: "12/13–14", event: "高中乙級排球聯賽桃園預賽", venue: "會稽國中", division: "高男組" },
+    { year: "2025", date: "12/6–7",   event: "第七屆聖誕杯", venue: "中原大學", division: "社女組" },
+    { year: "2025", date: "9/27–30",  event: "第 52 屆永信盃", venue: "永信運動公園", division: "小六男女組" },
+    { year: "2025", date: "6/1",      event: "六校排球盃賽", venue: "台南一中", division: "高男組" },
+    { year: "2025", date: "4/20",     event: "臺北市青年盃", venue: "明湖國中", division: "國男組及高男組" },
+    { year: "2025", date: "4/17–18",  event: "嘉義市市長盃", venue: "港坪運動公園", division: "高女組" },
+    { year: "2024", date: "12/14–15", event: "第六屆聖誕盃", venue: "新竹可利球館", division: "社女組" },
+    { year: "2024", date: "11/9–10",  event: "臺北市中正盃", venue: "三民國小", division: "小五六男女組" },
+    { year: "2024", date: "10/12–13", event: "府城盃", venue: "台南霖度C、台南一中", division: "社男組" },
+    { year: "2024", date: "9/29",     event: "格璽雅盃", venue: "國北教育大學", division: "社女組" }
+  ],
+  Photos: []
+};
+
+/* ============================================================
+   3 · 畫面（一般不需要修改）
+   ============================================================ */
+(function () {
+  var FALLBACK_PHOTO = "https://4be244f900.cbaul-cdnwnd.com/ce9b81c61c0a1e8340342d4b0bea6df5/200000004-85e1785e18/%E6%9D%8E%E7%A5%90%E9%A0%A1.jpeg?ph=4be244f900";
+  var PAGES = ["home", "articles", "teaching", "referee", "photography"];
+  var D = DATA, current = "home";
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function yes(v) { v = String(v || "").trim().toLowerCase(); return v === "yes" || v === "y" || v === "true" || v === "1" || v === "v" || v === "是"; }
+  function hidden(r) { var v = String(r.hide || "").trim().toLowerCase(); return yes(v); }
+  function rows(name) { return (D[name] || []).filter(function (r) { return !hidden(r); }); }
+  function settings() {
+    var o = {};
+    (D.Settings || []).forEach(function (r) { if (r.key) o[String(r.key).trim()] = String(r.value == null ? "" : r.value).trim(); });
+    return o;
+  }
+  // Google Drive 分享連結 → 可直接顯示的圖片網址
+  function imgUrl(u) {
+    u = String(u || "").trim();
+    var m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]+)/);
+    return m ? "https://lh3.googleusercontent.com/d/" + m[1] : u;
+  }
+  function link(title, url, cls) {
+    cls = cls || "title";
+    return url ? '<a class="' + cls + '" href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(title) + '</a>'
+               : '<span class="' + cls + '">' + esc(title) + '</span>';
+  }
+  function tag(t) { return t ? '<span class="tag">' + esc(t) + '</span>' : ""; }
+  function groupBy(list, key) {
+    var order = [], map = {};
+    list.forEach(function (r) {
+      var k = String(r[key] || "").trim();
+      if (!map[k]) { map[k] = []; order.push(k); }
+      map[k].push(r);
+    });
+    return order.map(function (k) { return { key: k, items: map[k] }; });
+  }
+  function projectItem(p, showTerm) {
+    var meta = [];
+    if (showTerm && p.term) meta.push(esc(p.term));
+    if (p.coauthors) meta.push("with " + esc(p.coauthors));
+    return '<li>' + link(p.title, p.url) + tag(p.status) + (meta.length ? '<span class="meta">' + meta.join(" · ") + '</span>' : "") + '</li>';
+  }
+
+  /* ---------- 各頁 ---------- */
+  function homeHTML(s) {
+    var roles = Object.keys(s).filter(function (k) { return /^role\d*$/.test(k) && s[k]; }).sort()
+      .map(function (k) { return '<li>' + esc(s[k]) + '</li>'; }).join("");
+    var btns = [];
+    if (s.cv_url) btns.push('<a class="primary" href="' + esc(s.cv_url) + '" target="_blank" rel="noopener">CV ↓</a>');
+    if (s.email) btns.push('<a href="mailto:' + esc(s.email) + '">Email</a>');
+    if (s.linkedin) btns.push('<a href="' + esc(s.linkedin) + '" target="_blank" rel="noopener">LinkedIn ↗</a>');
+    if (s.instagram) btns.push('<a href="' + esc(s.instagram) + '" target="_blank" rel="noopener">Instagram ↗</a>');
+    if (s.github) btns.push('<a href="' + esc(s.github) + '" target="_blank" rel="noopener">GitHub ↗</a>');
+    if (s.scholar) btns.push('<a href="' + esc(s.scholar) + '" target="_blank" rel="noopener">Google Scholar ↗</a>');
+
+    var projects = rows("Projects");
+    var picked = projects.filter(function (p) { return yes(p.home); });
+    if (!picked.length) picked = projects.slice(0, 3);
+
+    return '<div class="profile">'
+      + '<img src="' + esc(imgUrl(s.photo_url || "photo.jpg")) + '" alt="' + esc(s.name_zh || "") + '" onerror="this.onerror=null;this.src=\'' + FALLBACK_PHOTO + '\';">'
+      + '<div><h1>' + esc(s.name_zh || "") + ' ' + esc(s.name_en || "") + '</h1>'
+      + '<ul class="roles">' + roles + '</ul>'
+      + (s.about ? '<p class="about">' + esc(s.about) + '</p>' : "")
+      + '<div class="links">' + btns.join("") + '</div>'
+      + (s.email ? '<p class="contact">' + esc(s.email) + '</p>' : "")
+      + '</div></div>'
+      + (picked.length ? '<h2>Recent Work</h2><ul class="list">' + picked.map(function (p) { return projectItem(p, true); }).join("") + '</ul>'
+        + '<p class="more"><a href="#articles" data-page="articles">All projects and articles →</a></p>' : "");
+  }
+
+  function articlesHTML() {
+    var groups = groupBy(rows("Projects"), "term");
+    var cols = rows("Columns");
+    return '<h1>Articles</h1><p class="lead">Term papers, projects, and student column writing.</p>'
+      + '<h2>Term Papers &amp; Projects</h2>'
+      + groups.map(function (g) {
+          return (g.key ? '<div class="term">' + esc(g.key) + '</div>' : "")
+            + '<ul class="list">' + g.items.map(function (p) { return projectItem(p, false); }).join("") + '</ul>';
+        }).join("")
+      + (cols.length ? '<h2>Student Column Articles</h2><ul class="list">'
+        + cols.map(function (c) { return '<li>' + link(c.title, c.url) + tag(c.tag) + '</li>'; }).join("") + '</ul>' : "");
+  }
+
+  function teachingHTML() {
+    return '<h1>Teaching</h1><p class="lead">Calculus course materials: lecture videos, notes, and homework.</p>'
+      + groupBy(rows("Teaching"), "course").map(function (c) {
+          return '<h2>' + esc(c.key) + '</h2>'
+            + groupBy(c.items, "category").map(function (cat) {
+                return (cat.key ? '<h3>' + esc(cat.key) + '</h3>' : "")
+                  + '<ul class="list">' + cat.items.map(function (t) { return '<li>' + link(t.title, t.url) + tag(t.tag) + '</li>'; }).join("") + '</ul>';
+              }).join("");
+        }).join("");
+  }
+
+  function refereeHTML(s) {
+    return '<h1>Volleyball Referee</h1><p class="lead">' + esc(s.referee_intro || "中華民國排球協會 C 級裁判 · 執法紀錄") + '</p>'
+      + groupBy(rows("Referee"), "year").map(function (y) {
+          return '<h2>' + esc(y.key) + '</h2><ul class="list log">'
+            + y.items.map(function (r) {
+                var meta = [r.venue, r.division].filter(Boolean).map(esc).join(" · ");
+                return '<li><span class="date">' + esc(r.date) + '</span><span><span class="title">' + esc(r.event) + '</span>'
+                  + (meta ? '<span class="meta">' + meta + '</span>' : "") + '</span></li>';
+              }).join("") + '</ul>';
+        }).join("");
+  }
+
+  function photographyHTML(s) {
+    var photos = rows("Photos").filter(function (p) { return p.image_url; });
+    return '<h1>Photography</h1><p class="lead">' + esc(s.photo_intro || "More photos on Instagram.") + '</p>'
+      + (s.instagram ? '<div class="links" style="margin-top:18px;"><a class="primary" href="' + esc(s.instagram) + '" target="_blank" rel="noopener">Instagram' + (s.instagram_handle ? " · " + esc(s.instagram_handle) : "") + ' ↗</a></div>' : "")
+      + (photos.length ? '<div class="gallery">' + photos.map(function (p) {
+          return '<figure><img loading="lazy" src="' + esc(imgUrl(p.image_url)) + '" alt="' + esc(p.caption || "") + '">'
+            + (p.caption ? '<figcaption>' + esc(p.caption) + '</figcaption>' : "") + '</figure>';
+        }).join("") + '</div>' : "");
+  }
+
+  /* ---------- 繪製與切換 ---------- */
+  function render() {
+    var s = settings();
+    document.getElementById("brand-en").textContent = s.name_en || "";
+    document.getElementById("brand-zh").textContent = s.name_zh || "";
+    document.getElementById("page-home").innerHTML = homeHTML(s);
+    document.getElementById("page-articles").innerHTML = articlesHTML(s);
+    document.getElementById("page-teaching").innerHTML = teachingHTML(s);
+    document.getElementById("page-referee").innerHTML = refereeHTML(s);
+    document.getElementById("page-photography").innerHTML = photographyHTML(s);
+    document.getElementById("footer").textContent = "© " + new Date().getFullYear() + " " + (s.name_zh || "") + " " + (s.name_en || "");
+    if (s.name_en || s.name_zh) document.title = (s.name_en || "") + " " + (s.name_zh || "");
+    show(current, false);
+  }
+
+  function show(id, scroll) {
+    if (PAGES.indexOf(id) < 0) id = "home";
+    current = id;
+    PAGES.forEach(function (p) { document.getElementById("page-" + p).classList.toggle("active", p === id); });
+    document.querySelectorAll(".nav ul a").forEach(function (a) { a.classList.toggle("active", a.getAttribute("data-page") === id); });
+    if (scroll !== false) { try { window.scrollTo(0, 0); } catch (e) {} }
+  }
+
+  // 點擊切換（不依賴網址 #，所以在預覽視窗裡也能用）
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("[data-page]");
+    if (!a) return;
+    e.preventDefault();
+    var id = a.getAttribute("data-page");
+    show(id);
+    try { history.pushState(null, "", "#" + id); } catch (err) {}
+  });
+  window.addEventListener("popstate", function () { show((location.hash || "#home").slice(1)); });
+  window.addEventListener("hashchange", function () { show((location.hash || "#home").slice(1)); });
+
+  current = (location.hash || "#home").slice(1);
+  render();
+
+  /* ---------- 讀取 Google 試算表 ---------- */
+  function fetchTab(name) {
+    var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&headers=1&sheet=" + encodeURIComponent(name);
+    return fetch(url).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); }).then(function (txt) {
+      var start = txt.indexOf("("), end = txt.lastIndexOf(")");
+      var j = JSON.parse(txt.slice(start + 1, end));
+      if (j.status === "error" || !j.table) return null;
+      var cols = j.table.cols.map(function (c) { return String(c.label || "").trim(); });
+      if (!cols.some(Boolean)) return null;
+      return (j.table.rows || []).map(function (row) {
+        var o = {};
+        cols.forEach(function (h, i) {
+          if (!h) return;
+          var c = (row.c || [])[i];
+          var v = c ? (c.f != null ? c.f : c.v) : "";
+          o[h] = v == null ? "" : String(v).trim();
+        });
+        return o;
+      }).filter(function (o) { return Object.keys(o).some(function (k) { return o[k] !== ""; }); });
+    }).catch(function (e) { console.warn("[site] 讀不到分頁 " + name, e); return null; });
+  }
+
+  if (SHEET_ID) {
+    var tabs = ["Settings", "Projects", "Columns", "Teaching", "Referee", "Photos"];
+    Promise.all(tabs.map(fetchTab)).then(function (res) {
+      var got = {}, any = false;
+      tabs.forEach(function (t, i) { if (res[i]) { got[t] = res[i]; any = true; } });
+      if (!any) { console.warn("[site] 試算表讀不到，使用內建內容"); return; }
+      D = Object.assign({}, DATA, got);
+      render();
+    });
+  }
+})();
+</script>
+</body>
+</html>
