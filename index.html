@@ -98,6 +98,8 @@
   /* 裁判紀錄 */
   .log li{ display:grid; grid-template-columns:96px 1fr; gap:14px; }
   .log .date{ font-family:var(--sans); font-size:13.5px; color:var(--faint); padding-top:2px; }
+  .log .entry{ display:flex; justify-content:space-between; align-items:baseline; gap:16px; }
+  .log .meta{ margin-top:0; text-align:right; flex-shrink:0; }
 
   /* 照片牆 */
   .gallery{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:24px; }
@@ -118,6 +120,8 @@
     .profile img{ width:140px; height:170px; }
     h1{ font-size:27px; }
     .log li{ grid-template-columns:1fr; gap:0; }
+    .log .entry{ display:block; }
+    .log .meta{ margin-top:2px; text-align:left; }
     .gallery{ grid-template-columns:repeat(2,1fr); }
   }
 </style>
@@ -331,7 +335,7 @@ var DATA = {
           return '<h2>' + esc(y.key) + '</h2><ul class="list log">'
             + y.items.map(function (r) {
                 var meta = [r.venue, r.division].filter(Boolean).map(esc).join(" · ");
-                return '<li><span class="date">' + esc(r.date) + '</span><span><span class="title">' + esc(r.event) + '</span>'
+                return '<li><span class="date">' + esc(r.date) + '</span><span class="entry"><span class="title">' + esc(r.event) + '</span>'
                   + (meta ? '<span class="meta">' + meta + '</span>' : "") + '</span></li>';
               }).join("") + '</ul>';
         }).join("");
