@@ -115,8 +115,13 @@
 
   /* 照片牆 */
   .album-desc{ margin:8px 0 0; }
-  .gallery{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px; }
-  .gallery img{ width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:4px; display:block; background:var(--line); cursor:zoom-in; }
+  /* 等高排列：每張照片照原比例，同一列高度一致（比例在照片載入後才設定） */
+  .gallery{ display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+  .gallery .row{ display:flex; gap:8px; }
+  .gallery img{
+    flex:1.5 1 0; min-width:0; aspect-ratio:1.5; object-fit:cover;
+    border-radius:4px; display:block; background:var(--line); cursor:zoom-in;
+  }
   .lightbox{
     position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center;
     padding:24px; background:rgba(0,0,0,.88); cursor:zoom-out;
@@ -139,7 +144,6 @@
     .log li{ grid-template-columns:1fr; gap:0; }
     .log .entry{ display:block; }
     .log .meta{ margin-top:2px; text-align:left; }
-    .gallery{ grid-template-columns:repeat(2,1fr); }
   }
 </style>
 </head>
@@ -403,6 +407,14 @@ var DATA = {
         }).join("");
   }
 
+  // 照片分列：4 張排 2+2、5 張排 3+2、6 張排 3+3，避免最後一列只剩一張被放很大
+  function galleryRows(list) {
+    var sizes = { 1: [1], 2: [2], 3: [3], 4: [2, 2], 5: [3, 2], 6: [3, 3] }[list.length] || [3, 3];
+    var out = [], i = 0;
+    sizes.forEach(function (n) { out.push(list.slice(i, i + n)); i += n; });
+    return out;
+  }
+
   function photographyHTML(s) {
     // 一列一個活動：photo1～photo6 是精選照片，drive_url 是完整相簿
     var albums = rows("Photos").filter(function (a) { return loc(a, "title") || a.photo1 || a.drive_url; });
@@ -415,8 +427,10 @@ var DATA = {
           return '<h2>' + esc(title) + '</h2>'
             + (meta ? '<span class="meta">' + meta + '</span>' : "")
             + (desc ? '<p class="album-desc">' + esc(desc) + '</p>' : "")
-            + (photos.length ? '<div class="gallery">' + photos.map(function (u) {
-                return '<img loading="lazy" src="' + esc(imgUrl(u, 600)) + '" data-full="' + esc(imgUrl(u, 2000)) + '" alt="' + esc(title) + '">';
+            + (photos.length ? '<div class="gallery">' + galleryRows(photos).map(function (row) {
+                return '<div class="row">' + row.map(function (u) {
+                  return '<img loading="lazy" src="' + esc(imgUrl(u, 800)) + '" data-full="' + esc(imgUrl(u, 2000)) + '" alt="' + esc(title) + '">';
+                }).join("") + '</div>';
               }).join("") + '</div>' : "")
             + (a.drive_url ? '<p class="more"><a href="' + esc(a.drive_url) + '" target="_blank" rel="noopener">' + esc(tr("drive")) + '</a></p>' : "");
         }).join("");
@@ -470,6 +484,14 @@ var DATA = {
     else if (e.target.closest("#lightbox")) box.classList.remove("open");
   });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") box.classList.remove("open"); });
+  // 照片載入後依實際長寬比調整寬度，讓同一列等高且不裁切
+  document.addEventListener("load", function (e) {
+    var img = e.target;
+    if (!img.closest || !img.closest(".gallery") || !img.naturalHeight) return;
+    var r = img.naturalWidth / img.naturalHeight;
+    img.style.flexGrow = r;
+    img.style.aspectRatio = r;
+  }, true);
   window.addEventListener("popstate", function () { show((location.hash || "#home").slice(1)); });
   window.addEventListener("hashchange", function () { show((location.hash || "#home").slice(1)); });
 
