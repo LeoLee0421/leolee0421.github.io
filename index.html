@@ -414,14 +414,14 @@ var DATA = {
   }
 
   function photographyHTML(s) {
-    // 一列一個活動：photo1～photo6 是精選照片，drive_url 是完整相簿
-    var albums = rows("Photos").filter(function (a) { return loc(a, "title") || a.photo1 || a.drive_url; });
+    // 一列一個活動：photo 開頭的欄位是精選照片（依欄位順序，數量不限），drive_url 是完整相簿
+    var albums = rows("Photos").filter(function (a) { return loc(a, "title") || a.drive_url || Object.keys(a).some(function (k) { return /^photo/.test(k) && a[k]; }); });
     return '<h1>' + esc(tr("photography")) + '</h1><p class="lead">' + esc(loc(s, "photo_intro") || tr("photoLead")) + '</p>'
       + (s.instagram ? '<div class="links" style="margin-top:18px;"><a class="primary" href="' + esc(s.instagram) + '" target="_blank" rel="noopener">Instagram' + (s.instagram_handle ? " · " + esc(s.instagram_handle) : "") + ' ↗</a></div>' : "")
       + albums.map(function (a) {
           var title = loc(a, "title"), desc = loc(a, "description");
           var meta = [a.date, loc(a, "location")].filter(Boolean).map(esc).join(" · ");
-          var photos = [1, 2, 3, 4, 5, 6].map(function (i) { return a["photo" + i]; }).filter(Boolean);
+          var photos = Object.keys(a).filter(function (k) { return /^photo/.test(k) && a[k]; }).map(function (k) { return a[k]; });
           var drive = a.drive_url ? '<a href="' + esc(a.drive_url) + '" target="_blank" rel="noopener">' + esc(tr("drive")) + '</a>' : "";
           return '<h2>' + esc(title) + '</h2>'
             + (meta || drive ? '<div class="album-meta"><span class="meta">' + meta + '</span>' + drive + '</div>' : "")
