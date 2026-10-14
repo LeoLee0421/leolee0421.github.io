@@ -114,10 +114,15 @@
   html[lang="en"] .log .meta{ margin-top:2px; text-align:left; }
 
   /* 照片牆 */
-  .gallery{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:24px; }
-  .gallery figure{ margin:0; }
-  .gallery img{ width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:4px; display:block; background:var(--line); }
-  .gallery figcaption{ font-family:var(--sans); font-size:12.5px; color:var(--muted); margin-top:4px; }
+  .album-desc{ margin:8px 0 0; }
+  .gallery{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px; }
+  .gallery img{ width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:4px; display:block; background:var(--line); cursor:zoom-in; }
+  .lightbox{
+    position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center;
+    padding:24px; background:rgba(0,0,0,.88); cursor:zoom-out;
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox img{ max-width:100%; max-height:100%; object-fit:contain; border-radius:2px; }
 
   footer{ border-top:1px solid var(--line); padding:24px 0 40px; font-family:var(--sans); font-size:13px; color:var(--faint); }
 
@@ -165,6 +170,8 @@
 <footer>
   <div class="wrap" id="footer"></div>
 </footer>
+
+<div class="lightbox" id="lightbox"><img alt=""></div>
 
 <script>
 /* ============================================================
@@ -263,7 +270,7 @@ var DATA = {
       papers: "Term Papers & Projects", columns: "Student Column Articles",
       teachingLead: "Calculus course materials: lecture videos, notes, and homework.",
       refereeLead: "Class C Referee, Chinese Taipei Volleyball Association · Officiating record",
-      photoLead: "More photos on Instagram."
+      photoLead: "More photos on Instagram.", drive: "More photos on Google Drive ↗"
     },
     zh: {
       home: "首頁", articles: "文章", teaching: "教學", referee: "排球裁判", photography: "攝影",
@@ -272,7 +279,7 @@ var DATA = {
       papers: "課堂報告與專題", columns: "學生專欄文章",
       teachingLead: "微積分課程教材：課程影片、講義與作業。",
       refereeLead: "中華民國排球協會 C 級裁判 · 執法紀錄",
-      photoLead: "更多照片請見 Instagram。"
+      photoLead: "更多照片請見 Instagram。", drive: "在 Google Drive 看更多照片 ↗"
     }
   };
   var SEASON_ZH = { spring: "春", summer: "夏", fall: "秋", autumn: "秋", winter: "冬" };
@@ -301,11 +308,11 @@ var DATA = {
     (D.Settings || []).forEach(function (r) { if (r.key) o[String(r.key).trim()] = String(r.value == null ? "" : r.value).trim(); });
     return o;
   }
-  // Google Drive 分享連結 → 可直接顯示的圖片網址
-  function imgUrl(u) {
+  // Google Drive 分享連結 → 可直接顯示的圖片網址；width 指定縮圖寬度
+  function imgUrl(u, width) {
     u = String(u || "").trim();
     var m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]+)/);
-    return m ? "https://lh3.googleusercontent.com/d/" + m[1] : u;
+    return m ? "https://lh3.googleusercontent.com/d/" + m[1] + (width ? "=w" + width : "") : u;
   }
   function link(title, url, cls) {
     cls = cls || "title";
@@ -397,14 +404,22 @@ var DATA = {
   }
 
   function photographyHTML(s) {
-    var photos = rows("Photos").filter(function (p) { return p.image_url; });
+    // 一列一個活動：photo1～photo6 是精選照片，drive_url 是完整相簿
+    var albums = rows("Photos").filter(function (a) { return loc(a, "title") || a.photo1 || a.drive_url; });
     return '<h1>' + esc(tr("photography")) + '</h1><p class="lead">' + esc(loc(s, "photo_intro") || tr("photoLead")) + '</p>'
       + (s.instagram ? '<div class="links" style="margin-top:18px;"><a class="primary" href="' + esc(s.instagram) + '" target="_blank" rel="noopener">Instagram' + (s.instagram_handle ? " · " + esc(s.instagram_handle) : "") + ' ↗</a></div>' : "")
-      + (photos.length ? '<div class="gallery">' + photos.map(function (p) {
-          var caption = loc(p, "caption");
-          return '<figure><img loading="lazy" src="' + esc(imgUrl(p.image_url)) + '" alt="' + esc(caption) + '">'
-            + (caption ? '<figcaption>' + esc(caption) + '</figcaption>' : "") + '</figure>';
-        }).join("") + '</div>' : "");
+      + albums.map(function (a) {
+          var title = loc(a, "title"), desc = loc(a, "description");
+          var meta = [a.date, loc(a, "location")].filter(Boolean).map(esc).join(" · ");
+          var photos = [1, 2, 3, 4, 5, 6].map(function (i) { return a["photo" + i]; }).filter(Boolean);
+          return '<h2>' + esc(title) + '</h2>'
+            + (meta ? '<span class="meta">' + meta + '</span>' : "")
+            + (desc ? '<p class="album-desc">' + esc(desc) + '</p>' : "")
+            + (photos.length ? '<div class="gallery">' + photos.map(function (u) {
+                return '<img loading="lazy" src="' + esc(imgUrl(u, 600)) + '" data-full="' + esc(imgUrl(u, 2000)) + '" alt="' + esc(title) + '">';
+              }).join("") + '</div>' : "")
+            + (a.drive_url ? '<p class="more"><a href="' + esc(a.drive_url) + '" target="_blank" rel="noopener">' + esc(tr("drive")) + '</a></p>' : "");
+        }).join("");
   }
 
   /* ---------- 繪製與切換 ---------- */
@@ -447,6 +462,14 @@ var DATA = {
     try { localStorage.setItem("lang", lang); } catch (e) {}
     render();
   });
+  // 點照片放大，點任何地方或按 Esc 關閉
+  var box = document.getElementById("lightbox");
+  document.addEventListener("click", function (e) {
+    var img = e.target.closest(".gallery img");
+    if (img) { box.querySelector("img").src = img.getAttribute("data-full") || img.src; box.classList.add("open"); }
+    else if (e.target.closest("#lightbox")) box.classList.remove("open");
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") box.classList.remove("open"); });
   window.addEventListener("popstate", function () { show((location.hash || "#home").slice(1)); });
   window.addEventListener("hashchange", function () { show((location.hash || "#home").slice(1)); });
 
