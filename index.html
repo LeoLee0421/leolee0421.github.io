@@ -66,6 +66,7 @@
     font-family:var(--sans); font-size:13px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
     color:var(--accent); margin:44px 0 14px; padding-bottom:8px; border-bottom:1px solid var(--line);
   }
+  h2.course{ font-size:18px; letter-spacing:0; text-transform:none; }
   h3{ font-family:var(--sans); font-size:14px; font-weight:600; color:var(--muted); margin:26px 0 8px; }
   .lead{ color:var(--muted); margin:0 0 8px; }
 
@@ -91,6 +92,10 @@
   .tag{
     display:inline-block; font-family:var(--sans); font-size:11px; font-weight:500; letter-spacing:.03em;
     padding:1px 8px; border-radius:10px; background:var(--accent-soft); color:var(--accent); margin-left:6px; vertical-align:2px;
+  }
+  .lecture{
+    display:inline-block; font-size:12px; line-height:1.5; padding:0 9px; border:1px solid var(--line); border-radius:10px;
+    color:var(--muted); margin-right:8px;
   }
   .term{ font-family:var(--sans); font-size:13px; font-weight:600; color:var(--faint); margin:22px 0 2px; }
   .more{ font-family:var(--sans); font-size:14px; margin-top:12px; }
@@ -273,7 +278,9 @@ var DATA = {
   function projectItem(p, showTerm) {
     var meta = [];
     if (showTerm && p.term) meta.push(esc(p.term));
-    if (p.coauthors) meta.push("with " + esc(p.coauthors));
+    var lecture = p.lecture || p.Lecture;
+    var by = (lecture ? '<span class="lecture">' + esc(lecture) + '</span>' : "") + (p.coauthors ? "with " + esc(p.coauthors) : "");
+    if (by) meta.push(by);
     return '<li>' + link(p.title, p.url) + tag(p.status) + (meta.length ? '<span class="meta">' + meta.join(" · ") + '</span>' : "") + '</li>';
   }
 
@@ -321,7 +328,7 @@ var DATA = {
   function teachingHTML() {
     return '<h1>Teaching</h1><p class="lead">Calculus course materials: lecture videos, notes, and homework.</p>'
       + groupBy(rows("Teaching"), "course").map(function (c) {
-          return '<h2>' + esc(c.key) + '</h2>'
+          return '<h2 class="course">' + esc(c.key) + '</h2>'
             + groupBy(c.items, "category").map(function (cat) {
                 return (cat.key ? '<h3>' + esc(cat.key) + '</h3>' : "")
                   + '<ul class="list">' + cat.items.map(function (t) { return '<li>' + link(t.title, t.url) + tag(t.tag) + '</li>'; }).join("") + '</ul>';
