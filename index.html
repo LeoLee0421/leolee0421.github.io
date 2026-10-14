@@ -51,9 +51,14 @@
   .nav{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 24px; flex-wrap:wrap; }
   .brand{ font-family:var(--serif); font-weight:600; font-size:18px; color:var(--text); border:0; cursor:pointer; }
   .brand span{ color:var(--faint); font-weight:400; margin-left:4px; }
-  .nav ul{ list-style:none; margin:0; padding:0; display:flex; gap:22px; flex-wrap:wrap; }
+  .nav ul{ list-style:none; margin:0; padding:0; display:flex; align-items:center; gap:22px; flex-wrap:wrap; }
   .nav ul a{ font-family:var(--sans); font-size:14px; color:var(--muted); padding-bottom:2px; cursor:pointer; }
   .nav ul a.active{ color:var(--text); border-bottom:2px solid var(--accent); }
+  .lang{
+    font-family:var(--sans); font-size:12.5px; color:var(--muted); background:none; cursor:pointer;
+    border:1px solid var(--line); border-radius:12px; padding:2px 10px;
+  }
+  .lang:hover{ border-color:var(--accent); color:var(--accent); }
 
   /* ===== 區塊 ===== */
   main.wrap{ padding-top:48px; padding-bottom:32px; min-height:60vh; }
@@ -137,11 +142,12 @@
   <div class="nav">
     <a class="brand" href="#home" data-page="home"><span id="brand-en" style="color:inherit;margin:0;font-weight:600;"></span><span id="brand-zh"></span></a>
     <ul>
-      <li><a href="#home" data-page="home">Home</a></li>
-      <li><a href="#articles" data-page="articles">Articles</a></li>
-      <li><a href="#teaching" data-page="teaching">Teaching</a></li>
-      <li><a href="#referee" data-page="referee">Volleyball Referee</a></li>
-      <li><a href="#photography" data-page="photography">Photography</a></li>
+      <li><a href="#home" data-page="home" data-i18n="home">Home</a></li>
+      <li><a href="#articles" data-page="articles" data-i18n="articles">Articles</a></li>
+      <li><a href="#teaching" data-page="teaching" data-i18n="teaching">Teaching</a></li>
+      <li><a href="#referee" data-page="referee" data-i18n="referee">Volleyball Referee</a></li>
+      <li><a href="#photography" data-page="photography" data-i18n="photography">Photography</a></li>
+      <li><button type="button" class="lang" id="lang-toggle"></button></li>
     </ul>
   </div>
 </header>
@@ -243,6 +249,45 @@ var DATA = {
   var PAGES = ["home", "articles", "teaching", "referee", "photography"];
   var D = DATA, current = "home";
 
+  /* ---------- 語言 ---------- */
+  var lang = "en";
+  try { lang = localStorage.getItem("lang") || (/^zh/i.test(navigator.language || "") ? "zh" : "en"); } catch (e) {}
+  if (lang !== "zh") lang = "en";
+  var TEXT = {
+    en: {
+      home: "Home", articles: "Articles", teaching: "Teaching", referee: "Volleyball Referee", photography: "Photography",
+      toggle: "中文", recent: "Recent Work", allWork: "All projects and articles →", by: "with ",
+      articlesLead: "Term papers, projects, and student column writing.",
+      papers: "Term Papers & Projects", columns: "Student Column Articles",
+      teachingLead: "Calculus course materials: lecture videos, notes, and homework.",
+      refereeLead: "Class C Referee, Chinese Taipei Volleyball Association · Officiating record",
+      photoLead: "More photos on Instagram."
+    },
+    zh: {
+      home: "首頁", articles: "文章", teaching: "教學", referee: "排球裁判", photography: "攝影",
+      toggle: "EN", recent: "近期作品", allWork: "所有研究與文章 →", by: "共同作者：",
+      articlesLead: "課堂報告、專題與學生專欄文章。",
+      papers: "課堂報告與專題", columns: "學生專欄文章",
+      teachingLead: "微積分課程教材：課程影片、講義與作業。",
+      refereeLead: "中華民國排球協會 C 級裁判 · 執法紀錄",
+      photoLead: "更多照片請見 Instagram。"
+    }
+  };
+  var SEASON_ZH = { spring: "春", summer: "夏", fall: "秋", autumn: "秋", winter: "冬" };
+  var STATUS_ZH = { "in progress": "進行中", "working paper": "工作論文", "draft": "初稿" };
+  function tr(k) { return TEXT[lang][k]; }
+  // 讀欄位：先找目前語言的欄（例 lecture_zh），沒有就用原欄，再沒有就用另一語言的欄
+  function loc(r, key) { return r[key + "_" + lang] || r[key] || r[key + "_" + (lang === "zh" ? "en" : "zh")] || ""; }
+  function termLabel(r) {
+    if (r["term_" + lang]) return r["term_" + lang];
+    var m = String(r.term || "").trim().match(/^(spring|summer|fall|autumn|winter)\s+(\d{4})$/i);
+    return m && lang === "zh" ? m[2] + " " + SEASON_ZH[m[1].toLowerCase()] : (r.term || "");
+  }
+  function statusLabel(r) {
+    if (r["status_" + lang]) return r["status_" + lang];
+    return (lang === "zh" && STATUS_ZH[String(r.status || "").trim().toLowerCase()]) || r.status || "";
+  }
+
   function esc(s) {
     return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
@@ -277,17 +322,19 @@ var DATA = {
   }
   function projectItem(p, showTerm) {
     var meta = [];
-    if (showTerm && p.term) meta.push(esc(p.term));
-    var lecture = p.lecture || p.Lecture;
-    var by = (lecture ? '<span class="lecture">' + esc(lecture) + '</span>' : "") + (p.coauthors ? "with " + esc(p.coauthors) : "");
+    if (showTerm && p.term) meta.push(esc(termLabel(p)));
+    var lecture = loc(p, "lecture");
+    var by = (lecture ? '<span class="lecture">' + esc(lecture) + '</span>' : "") + (p.coauthors ? esc(tr("by")) + esc(p.coauthors) : "");
     if (by) meta.push(by);
-    return '<li>' + link(p.title, p.url) + tag(p.status) + (meta.length ? '<span class="meta">' + meta.join(" · ") + '</span>' : "") + '</li>';
+    return '<li>' + link(p.title, p.url) + tag(statusLabel(p)) + (meta.length ? '<span class="meta">' + meta.join(" · ") + '</span>' : "") + '</li>';
   }
 
   /* ---------- 各頁 ---------- */
   function homeHTML(s) {
-    var roles = Object.keys(s).filter(function (k) { return /^role\d*$/.test(k) && s[k]; }).sort()
-      .map(function (k) { return '<li>' + esc(s[k]) + '</li>'; }).join("");
+    var roles = Object.keys(s).filter(function (k) { return /^role\d*$/.test(k) && loc(s, k); }).sort()
+      .map(function (k) { return '<li>' + esc(loc(s, k)) + '</li>'; }).join("");
+    var names = lang === "zh" ? [s.name_zh, s.name_en] : [s.name_en, s.name_zh];
+    var about = loc(s, "about");
     var btns = [];
     if (s.cv_url) btns.push('<a class="primary" href="' + esc(s.cv_url) + '" target="_blank" rel="noopener">CV ↓</a>');
     if (s.email) btns.push('<a href="mailto:' + esc(s.email) + '">Email</a>');
@@ -302,47 +349,47 @@ var DATA = {
 
     return '<div class="profile">'
       + '<img src="' + esc(imgUrl(s.photo_url || "photo.jpg")) + '" alt="' + esc(s.name_zh || "") + '" onerror="this.onerror=null;this.src=\'' + FALLBACK_PHOTO + '\';">'
-      + '<div><h1>' + esc(s.name_zh || "") + ' ' + esc(s.name_en || "") + '</h1>'
+      + '<div><h1>' + esc(names.filter(Boolean).join(" ")) + '</h1>'
       + '<ul class="roles">' + roles + '</ul>'
-      + (s.about ? '<p class="about">' + esc(s.about) + '</p>' : "")
+      + (about ? '<p class="about">' + esc(about) + '</p>' : "")
       + '<div class="links">' + btns.join("") + '</div>'
       + (s.email ? '<p class="contact">' + esc(s.email) + '</p>' : "")
       + '</div></div>'
-      + (picked.length ? '<h2>Recent Work</h2><ul class="list">' + picked.map(function (p) { return projectItem(p, true); }).join("") + '</ul>'
-        + '<p class="more"><a href="#articles" data-page="articles">All projects and articles →</a></p>' : "");
+      + (picked.length ? '<h2>' + esc(tr("recent")) + '</h2><ul class="list">' + picked.map(function (p) { return projectItem(p, true); }).join("") + '</ul>'
+        + '<p class="more"><a href="#articles" data-page="articles">' + esc(tr("allWork")) + '</a></p>' : "");
   }
 
   function articlesHTML() {
     var groups = groupBy(rows("Projects"), "term");
     var cols = rows("Columns");
-    return '<h1>Articles</h1><p class="lead">Term papers, projects, and student column writing.</p>'
-      + '<h2>Term Papers &amp; Projects</h2>'
+    return '<h1>' + esc(tr("articles")) + '</h1><p class="lead">' + esc(tr("articlesLead")) + '</p>'
+      + '<h2>' + esc(tr("papers")) + '</h2>'
       + groups.map(function (g) {
-          return (g.key ? '<div class="term">' + esc(g.key) + '</div>' : "")
+          return (g.key ? '<div class="term">' + esc(termLabel(g.items[0])) + '</div>' : "")
             + '<ul class="list">' + g.items.map(function (p) { return projectItem(p, false); }).join("") + '</ul>';
         }).join("")
-      + (cols.length ? '<h2>Student Column Articles</h2><ul class="list">'
+      + (cols.length ? '<h2>' + esc(tr("columns")) + '</h2><ul class="list">'
         + cols.map(function (c) { return '<li>' + link(c.title, c.url) + tag(c.tag) + '</li>'; }).join("") + '</ul>' : "");
   }
 
   function teachingHTML() {
-    return '<h1>Teaching</h1><p class="lead">Calculus course materials: lecture videos, notes, and homework.</p>'
+    return '<h1>' + esc(tr("teaching")) + '</h1><p class="lead">' + esc(tr("teachingLead")) + '</p>'
       + groupBy(rows("Teaching"), "course").map(function (c) {
-          return '<h2 class="course">' + esc(c.key) + '</h2>'
+          return '<h2 class="course">' + esc(loc(c.items[0], "course")) + '</h2>'
             + groupBy(c.items, "category").map(function (cat) {
-                return (cat.key ? '<h3>' + esc(cat.key) + '</h3>' : "")
+                return (cat.key ? '<h3>' + esc(loc(cat.items[0], "category")) + '</h3>' : "")
                   + '<ul class="list">' + cat.items.map(function (t) { return '<li>' + link(t.title, t.url) + tag(t.tag) + '</li>'; }).join("") + '</ul>';
               }).join("");
         }).join("");
   }
 
   function refereeHTML(s) {
-    return '<h1>Volleyball Referee</h1><p class="lead">' + esc(s.referee_intro || "中華民國排球協會 C 級裁判 · 執法紀錄") + '</p>'
+    return '<h1>' + esc(tr("referee")) + '</h1><p class="lead">' + esc(loc(s, "referee_intro") || tr("refereeLead")) + '</p>'
       + groupBy(rows("Referee"), "year").map(function (y) {
           return '<h2>' + esc(y.key) + '</h2><ul class="list log">'
             + y.items.map(function (r) {
-                var meta = [r.venue, r.division].filter(Boolean).map(esc).join(" · ");
-                return '<li><span class="date">' + esc(r.date) + '</span><span class="entry"><span class="title">' + esc(r.event) + '</span>'
+                var meta = [loc(r, "venue"), loc(r, "division")].filter(Boolean).map(esc).join(" · ");
+                return '<li><span class="date">' + esc(r.date) + '</span><span class="entry"><span class="title">' + esc(loc(r, "event")) + '</span>'
                   + (meta ? '<span class="meta">' + meta + '</span>' : "") + '</span></li>';
               }).join("") + '</ul>';
         }).join("");
@@ -350,17 +397,21 @@ var DATA = {
 
   function photographyHTML(s) {
     var photos = rows("Photos").filter(function (p) { return p.image_url; });
-    return '<h1>Photography</h1><p class="lead">' + esc(s.photo_intro || "More photos on Instagram.") + '</p>'
+    return '<h1>' + esc(tr("photography")) + '</h1><p class="lead">' + esc(loc(s, "photo_intro") || tr("photoLead")) + '</p>'
       + (s.instagram ? '<div class="links" style="margin-top:18px;"><a class="primary" href="' + esc(s.instagram) + '" target="_blank" rel="noopener">Instagram' + (s.instagram_handle ? " · " + esc(s.instagram_handle) : "") + ' ↗</a></div>' : "")
       + (photos.length ? '<div class="gallery">' + photos.map(function (p) {
-          return '<figure><img loading="lazy" src="' + esc(imgUrl(p.image_url)) + '" alt="' + esc(p.caption || "") + '">'
-            + (p.caption ? '<figcaption>' + esc(p.caption) + '</figcaption>' : "") + '</figure>';
+          var caption = loc(p, "caption");
+          return '<figure><img loading="lazy" src="' + esc(imgUrl(p.image_url)) + '" alt="' + esc(caption) + '">'
+            + (caption ? '<figcaption>' + esc(caption) + '</figcaption>' : "") + '</figure>';
         }).join("") + '</div>' : "");
   }
 
   /* ---------- 繪製與切換 ---------- */
   function render() {
     var s = settings();
+    document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
+    document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = tr(el.getAttribute("data-i18n")); });
+    document.getElementById("lang-toggle").textContent = tr("toggle");
     document.getElementById("brand-en").textContent = s.name_en || "";
     document.getElementById("brand-zh").textContent = s.name_zh || "";
     document.getElementById("page-home").innerHTML = homeHTML(s);
@@ -390,6 +441,11 @@ var DATA = {
     show(id);
     try { history.pushState(null, "", "#" + id); } catch (err) {}
   });
+  document.getElementById("lang-toggle").addEventListener("click", function () {
+    lang = lang === "zh" ? "en" : "zh";
+    try { localStorage.setItem("lang", lang); } catch (e) {}
+    render();
+  });
   window.addEventListener("popstate", function () { show((location.hash || "#home").slice(1)); });
   window.addEventListener("hashchange", function () { show((location.hash || "#home").slice(1)); });
 
@@ -403,7 +459,7 @@ var DATA = {
       var start = txt.indexOf("("), end = txt.lastIndexOf(")");
       var j = JSON.parse(txt.slice(start + 1, end));
       if (j.status === "error" || !j.table) return null;
-      var cols = j.table.cols.map(function (c) { return String(c.label || "").trim(); });
+      var cols = j.table.cols.map(function (c) { return String(c.label || "").trim().toLowerCase(); });
       if (!cols.some(Boolean)) return null;
       return (j.table.rows || []).map(function (row) {
         var o = {};
