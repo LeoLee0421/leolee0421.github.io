@@ -39,7 +39,7 @@
   }
   a{ color:var(--accent); text-decoration:none; border-bottom:1px solid transparent; transition:border-color .15s; }
   a:hover{ border-bottom-color:currentColor; }
-  .wrap{ max-width:780px; margin:0 auto; padding:0 24px; }
+  .wrap{ max-width:1000px; margin:0 auto; padding:0 24px; }
 
   /* ===== 導覽列 ===== */
   header{
@@ -48,7 +48,7 @@
     backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
     border-bottom:1px solid var(--line);
   }
-  .nav{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 24px; flex-wrap:wrap; }
+  .nav{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 24px; flex-wrap:wrap; max-width:1000px; margin:0 auto; }
   .brand{ font-family:var(--serif); font-weight:600; font-size:18px; color:var(--text); border:0; cursor:pointer; }
   .brand span{ color:var(--faint); font-weight:400; margin-left:4px; }
   .nav ul{ list-style:none; margin:0; padding:0; display:flex; align-items:center; gap:22px; flex-wrap:wrap; }
@@ -72,7 +72,7 @@
     color:var(--accent); margin:44px 0 14px; padding-bottom:8px; border-bottom:1px solid var(--line);
   }
   h3{ font-family:var(--sans); font-size:14px; font-weight:600; color:var(--muted); margin:26px 0 8px; }
-  .lead{ color:var(--muted); margin:0 0 8px; }
+  .lead{ color:var(--muted); margin:0 0 8px; max-width:68ch; }
 
   /* ===== 首頁 ===== */
   .profile{ display:grid; grid-template-columns:180px 1fr; gap:36px; align-items:start; }
@@ -80,7 +80,7 @@
   .roles{ list-style:none; padding:0; margin:14px 0 22px; }
   .roles li{ padding:3px 0; }
   .roles li::before{ content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); margin:0 10px 2px 0; }
-  .about{ margin:0 0 22px; }
+  .about{ margin:0 0 22px; max-width:68ch; }
   .links{ display:flex; flex-wrap:wrap; gap:10px; font-family:var(--sans); font-size:14px; }
   .links a{ border:1px solid var(--line); padding:6px 14px; border-radius:20px; color:var(--text); }
   .links a:hover{ border-color:var(--accent); color:var(--accent); }
@@ -114,12 +114,17 @@
   html[lang="en"] .log .meta{ margin-top:2px; text-align:left; }
 
   /* 照片牆 */
-  .album-desc{ margin:8px 0 0; }
-  /* 等高排列：每張照片照原比例，同一列高度一致（比例在照片載入後才設定） */
-  .gallery{ display:flex; flex-direction:column; gap:8px; margin-top:14px; }
-  .gallery .row{ display:flex; gap:8px; }
+  .album-meta{ display:flex; justify-content:space-between; align-items:baseline; gap:4px 16px; flex-wrap:wrap; }
+  .album-meta .meta{ margin-top:0; }
+  .album-meta a{ font-family:var(--sans); font-size:14px; }
+  .album-desc{ margin:6px 0 0; max-width:68ch; }
+  /* 一個活動一列，橫向捲動；照片維持原比例（載入前先用 3:2 佔位） */
+  .gallery{
+    display:flex; gap:8px; margin-top:12px; padding-bottom:6px;
+    overflow-x:auto; scroll-snap-type:x proximity; overscroll-behavior-x:contain;
+  }
   .gallery img{
-    flex:1.5 1 0; min-width:0; aspect-ratio:1.5; object-fit:cover;
+    flex:none; height:260px; width:auto; aspect-ratio:auto 3 / 2; scroll-snap-align:start;
     border-radius:4px; display:block; background:var(--line); cursor:zoom-in;
   }
   .lightbox{
@@ -144,6 +149,7 @@
     .log li{ grid-template-columns:1fr; gap:0; }
     .log .entry{ display:block; }
     .log .meta{ margin-top:2px; text-align:left; }
+    .gallery img{ height:190px; }
   }
 </style>
 </head>
@@ -407,14 +413,6 @@ var DATA = {
         }).join("");
   }
 
-  // 照片分列：4 張排 2+2、5 張排 3+2、6 張排 3+3，避免最後一列只剩一張被放很大
-  function galleryRows(list) {
-    var sizes = { 1: [1], 2: [2], 3: [3], 4: [2, 2], 5: [3, 2], 6: [3, 3] }[list.length] || [3, 3];
-    var out = [], i = 0;
-    sizes.forEach(function (n) { out.push(list.slice(i, i + n)); i += n; });
-    return out;
-  }
-
   function photographyHTML(s) {
     // 一列一個活動：photo1～photo6 是精選照片，drive_url 是完整相簿
     var albums = rows("Photos").filter(function (a) { return loc(a, "title") || a.photo1 || a.drive_url; });
@@ -424,15 +422,13 @@ var DATA = {
           var title = loc(a, "title"), desc = loc(a, "description");
           var meta = [a.date, loc(a, "location")].filter(Boolean).map(esc).join(" · ");
           var photos = [1, 2, 3, 4, 5, 6].map(function (i) { return a["photo" + i]; }).filter(Boolean);
+          var drive = a.drive_url ? '<a href="' + esc(a.drive_url) + '" target="_blank" rel="noopener">' + esc(tr("drive")) + '</a>' : "";
           return '<h2>' + esc(title) + '</h2>'
-            + (meta ? '<span class="meta">' + meta + '</span>' : "")
+            + (meta || drive ? '<div class="album-meta"><span class="meta">' + meta + '</span>' + drive + '</div>' : "")
             + (desc ? '<p class="album-desc">' + esc(desc) + '</p>' : "")
-            + (photos.length ? '<div class="gallery">' + galleryRows(photos).map(function (row) {
-                return '<div class="row">' + row.map(function (u) {
-                  return '<img loading="lazy" src="' + esc(imgUrl(u, 800)) + '" data-full="' + esc(imgUrl(u, 2000)) + '" alt="' + esc(title) + '">';
-                }).join("") + '</div>';
-              }).join("") + '</div>' : "")
-            + (a.drive_url ? '<p class="more"><a href="' + esc(a.drive_url) + '" target="_blank" rel="noopener">' + esc(tr("drive")) + '</a></p>' : "");
+            + (photos.length ? '<div class="gallery">' + photos.map(function (u) {
+                return '<img loading="lazy" src="' + esc(imgUrl(u, 800)) + '" data-full="' + esc(imgUrl(u, 2000)) + '" alt="' + esc(title) + '">';
+              }).join("") + '</div>' : "");
         }).join("");
   }
 
@@ -484,14 +480,6 @@ var DATA = {
     else if (e.target.closest("#lightbox")) box.classList.remove("open");
   });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") box.classList.remove("open"); });
-  // 照片載入後依實際長寬比調整寬度，讓同一列等高且不裁切
-  document.addEventListener("load", function (e) {
-    var img = e.target;
-    if (!img.closest || !img.closest(".gallery") || !img.naturalHeight) return;
-    var r = img.naturalWidth / img.naturalHeight;
-    img.style.flexGrow = r;
-    img.style.aspectRatio = r;
-  }, true);
   window.addEventListener("popstate", function () { show((location.hash || "#home").slice(1)); });
   window.addEventListener("hashchange", function () { show((location.hash || "#home").slice(1)); });
 
