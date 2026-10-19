@@ -109,8 +109,8 @@
   .banner{ position:relative; color:#fff; overflow:hidden; background:#000; }
   .banner.has-img{ background-size:cover; background-position:center; }
   .banner.has-img::before{ content:""; position:absolute; inset:0; background:linear-gradient(90deg, rgba(10,14,20,.78) 0%, rgba(10,14,20,.45) 60%, rgba(10,14,20,.25) 100%); }
-  .banner-inner{ position:relative; display:grid; grid-template-columns:150px 1fr; gap:36px; align-items:center; padding-top:84px; padding-bottom:84px; }
-  .banner .avatar{ width:150px; height:150px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,.85); background:rgba(255,255,255,.15); }
+  .banner-inner{ position:relative; display:grid; grid-template-columns:200px 1fr; gap:40px; align-items:center; padding-top:72px; padding-bottom:28px; }
+  .banner .avatar{ width:200px; height:200px; object-fit:cover; border:3px solid rgba(255,255,255,.85); background:rgba(255,255,255,.15); }
   .banner h1{ font-size:40px; margin:0; color:#fff; }
   .banner .alt{ font-size:20px; opacity:.8; margin:0 0 14px; }
   .banner .roles{ list-style:none; padding:0; margin:0 0 14px; font-size:16.5px; }
@@ -119,17 +119,15 @@
   .banner .links a{ color:#fff; border-color:rgba(255,255,255,.5); }
   .banner .links a:hover{ border-color:#fff; color:#fff; }
   .banner .links a.primary{ background:#fff; border-color:#fff; color:#000; }
-  /* 上下區塊中間的細白線，不滿版 */
-  .home-divider{ height:1px; width:min(720px, calc(100% - 48px)); margin:0 auto; background:rgba(255,255,255,.35); }
   .banner .lang{ position:absolute; top:18px; right:24px; z-index:1; color:#fff; }
 
-  .portals{ padding-top:64px; padding-bottom:40px; }
-  .portals-title{ font-family:var(--sans); font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.45); text-align:center; margin:0 0 36px; }
+  .portals{ padding-top:28px; padding-bottom:40px; }
+  .portals-title{ font-family:var(--sans); font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.45); text-align:center; margin:0 0 22px; }
   .portal-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
   .portal{ display:flex; flex-direction:column; align-items:center; text-align:center; color:#fff; border:0; cursor:pointer; }
   .portal:hover{ border:0; }
   .ring{
-    width:210px; height:210px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center;
+    width:min(260px, 100%); aspect-ratio:1; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center;
     box-shadow:0 0 0 1px rgba(255,255,255,.18);
     transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s;
   }
@@ -242,12 +240,12 @@
   @media (max-width:760px){
     body{ font-size:16px; }
     h1{ font-size:28px; }
-    .banner-inner{ grid-template-columns:1fr; gap:20px; padding-top:64px; padding-bottom:48px; }
-    .banner .avatar{ width:110px; height:110px; }
+    .banner-inner{ grid-template-columns:1fr; gap:20px; padding-top:64px; padding-bottom:20px; }
+    .banner .avatar{ width:150px; height:150px; }
     .banner h1{ font-size:31px; }
-    .portals{ padding-top:44px; }
+    .portals{ padding-top:24px; }
     .portal-grid{ grid-template-columns:1fr; gap:36px; }
-    .ring{ width:170px; height:170px; }
+    .ring{ width:210px; }
     .academic{ grid-template-columns:1fr; gap:8px; padding-top:28px; }
     .side{ position:static; display:grid; grid-template-columns:96px 1fr; gap:0 18px; }
     .side img{ width:96px; height:116px; grid-row:span 4; }
@@ -529,7 +527,6 @@ var DATA = {
       + '<ul class="roles">' + roles(s).map(function (r) { return '<li>' + esc(r) + '</li>'; }).join("") + '</ul>'
       + (bio ? '<p class="bio">' + esc(bio) + '</p>' : "")
       + '<div class="links">' + cvButtons(s) + '</div></div></div></header>'
-      + '<div class="home-divider"></div>'
       + '<section class="wrap portals"><p class="portals-title">' + esc(loc(s, "portals_title") || tr("explore")) + '</p><div class="portal-grid">'
       + portal("photography", "#2B2D31") + portal("academic", FX_COLOR.academic) + portal("events", "#B4441F")
       + '</div></section>' + footer(s);
