@@ -103,11 +103,10 @@
 
   footer{ padding:28px 0 40px; font-family:var(--sans); font-size:13px; color:var(--faint); }
 
-  /* ===== 首頁 ===== */
-  .banner{
-    position:relative; color:#fff; overflow:hidden;
-    background:linear-gradient(135deg, #1E3A5F 0%, #2C4F7C 55%, #3B6A8F 100%);
-  }
+  /* ===== 首頁：全黑底 ===== */
+  #view-home{ background:#000; color:#fff; min-height:100vh; }
+  #view-home footer{ color:rgba(255,255,255,.4); }
+  .banner{ position:relative; color:#fff; overflow:hidden; background:#000; }
   .banner.has-img{ background-size:cover; background-position:center; }
   .banner.has-img::before{ content:""; position:absolute; inset:0; background:linear-gradient(90deg, rgba(10,14,20,.78) 0%, rgba(10,14,20,.45) 60%, rgba(10,14,20,.25) 100%); }
   .banner-inner{ position:relative; display:grid; grid-template-columns:150px 1fr; gap:36px; align-items:center; padding-top:84px; padding-bottom:84px; }
@@ -119,25 +118,27 @@
   .banner .bio{ max-width:60ch; margin:0 0 18px; opacity:.92; }
   .banner .links a{ color:#fff; border-color:rgba(255,255,255,.5); }
   .banner .links a:hover{ border-color:#fff; color:#fff; }
-  .banner .links a.primary{ background:#fff; border-color:#fff; color:#1E3A5F; }
+  .banner .links a.primary{ background:#fff; border-color:#fff; color:#000; }
+  /* 上下區塊中間的細白線，不滿版 */
+  .home-divider{ height:1px; width:min(720px, calc(100% - 48px)); margin:0 auto; background:rgba(255,255,255,.35); }
   .banner .lang{ position:absolute; top:18px; right:24px; z-index:1; color:#fff; }
 
   .portals{ padding-top:64px; padding-bottom:40px; }
-  .portals-title{ font-family:var(--sans); font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); text-align:center; margin:0 0 36px; }
+  .portals-title{ font-family:var(--sans); font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.45); text-align:center; margin:0 0 36px; }
   .portal-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
-  .portal{ display:flex; flex-direction:column; align-items:center; text-align:center; color:var(--text); border:0; cursor:pointer; }
+  .portal{ display:flex; flex-direction:column; align-items:center; text-align:center; color:#fff; border:0; cursor:pointer; }
   .portal:hover{ border:0; }
   .ring{
     width:210px; height:210px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center;
-    box-shadow:0 0 0 1px var(--line), 0 10px 30px rgba(0,0,0,.08);
+    box-shadow:0 0 0 1px rgba(255,255,255,.18);
     transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s;
   }
   .ring img{ width:100%; height:100%; object-fit:cover; transition:transform .6s cubic-bezier(.2,.8,.2,1); }
   .ring svg{ width:64px; height:64px; stroke:#fff; fill:none; stroke-width:1.4; opacity:.9; }
-  .portal:hover .ring{ transform:translateY(-6px); box-shadow:0 0 0 4px var(--c), 0 18px 40px rgba(0,0,0,.14); }
+  .portal:hover .ring{ transform:translateY(-6px); box-shadow:0 0 0 3px rgba(255,255,255,.85), 0 18px 40px rgba(255,255,255,.08); }
   .portal:hover .ring img{ transform:scale(1.06); }
   .portal-name{ font-family:var(--sans); font-size:19px; font-weight:600; margin-top:20px; }
-  .portal-sub{ font-family:var(--sans); font-size:14px; color:var(--muted); margin-top:2px; }
+  .portal-sub{ font-family:var(--sans); font-size:14px; color:rgba(255,255,255,.6); margin-top:2px; }
 
   /* 點圓圈的轉場：一個圓從圓圈位置放大到蓋滿畫面 */
   .portal-fx{ position:fixed; inset:0; z-index:100; pointer-events:none; display:none; }
@@ -513,11 +514,13 @@ var DATA = {
   /* ---------- 首頁 ---------- */
   function homeHTML(s) {
     var n = names(s), bio = loc(s, "about");
+    // 圓圈下方的文字可在 Settings 用 portal_<頁面>_name／_sub 改寫
     var portal = function (id, color) {
       var img = s["portal_" + id + "_img"];
-      return '<a class="portal" href="#' + id + '" data-go="' + id + '" style="--c:' + color + '">'
+      return '<a class="portal" href="#' + id + '" data-go="' + id + '">'
         + '<span class="ring" style="background:' + color + '">' + (img ? '<img src="' + esc(imgUrl(img, 600)) + '" alt="">' : ICONS[id]) + '</span>'
-        + '<span class="portal-name">' + esc(tr(id)) + '</span><span class="portal-sub">' + esc(tr(id + "Sub")) + '</span></a>';
+        + '<span class="portal-name">' + esc(loc(s, "portal_" + id + "_name") || tr(id)) + '</span>'
+        + '<span class="portal-sub">' + esc(loc(s, "portal_" + id + "_sub") || tr(id + "Sub")) + '</span></a>';
     };
     return '<header class="banner' + (s.banner_url ? ' has-img" style="background-image:url(\'' + esc(imgUrl(s.banner_url, 2000)) + '\')' : '') + '">'
       + langBtn()
@@ -526,8 +529,9 @@ var DATA = {
       + '<ul class="roles">' + roles(s).map(function (r) { return '<li>' + esc(r) + '</li>'; }).join("") + '</ul>'
       + (bio ? '<p class="bio">' + esc(bio) + '</p>' : "")
       + '<div class="links">' + cvButtons(s) + '</div></div></div></header>'
-      + '<section class="wrap portals"><p class="portals-title">' + esc(tr("explore")) + '</p><div class="portal-grid">'
-      + portal("photography", FX_COLOR.photography) + portal("academic", FX_COLOR.academic) + portal("events", "#B4441F")
+      + '<div class="home-divider"></div>'
+      + '<section class="wrap portals"><p class="portals-title">' + esc(loc(s, "portals_title") || tr("explore")) + '</p><div class="portal-grid">'
+      + portal("photography", "#2B2D31") + portal("academic", FX_COLOR.academic) + portal("events", "#B4441F")
       + '</div></section>' + footer(s);
   }
 
