@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Noto+Serif+TC:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Noto+Serif+TC:wght@400;600&family=Inter:wght@400;500;600&family=Fraunces:ital,opsz,wght@1,9..144,600&display=swap" rel="stylesheet">
 <style>
   /* ===== 顏色與字型：要換風格，改這裡就好 ===== */
   :root{
@@ -123,7 +123,8 @@
   .banner .lang{ position:absolute; top:18px; right:24px; z-index:1; color:#fff; }
 
   .portals{ padding-top:28px; padding-bottom:40px; }
-  .portals-title{ font-family:var(--sans); font-size:18px; letter-spacing:.14em; text-transform:uppercase; font-weight:700; color:rgba(255,255,255,.9); text-align:center; margin:0 0 22px; }
+  /* 圓圈上方的標題：Fraunces 斜體，每個字首字母大寫 */
+  .portals-title{ font-family:'Fraunces','Noto Serif TC',Georgia,serif; font-style:italic; font-weight:600; font-size:34px; line-height:1.2; text-transform:capitalize; color:#fff; text-align:center; margin:0 0 26px; }
   .portal-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
   .portal{ display:flex; flex-direction:column; align-items:center; text-align:center; color:#fff; border:0; cursor:pointer; }
   .portal:hover{ border:0; }
@@ -245,6 +246,7 @@
     .banner .avatar{ width:170px; height:170px; }
     .banner h1{ font-size:31px; }
     .portals{ padding-top:24px; }
+    .portals-title{ font-size:28px; }
     .portal-grid{ grid-template-columns:1fr; gap:36px; }
     .ring{ width:180px; }
     .academic{ grid-template-columns:1fr; gap:8px; padding-top:28px; }
@@ -528,7 +530,7 @@ var DATA = {
       + '<ul class="roles">' + roles(s).map(function (r) { return '<li>' + esc(r) + '</li>'; }).join("") + '</ul>'
       + (bio ? '<p class="bio">' + esc(bio) + '</p>' : "")
       + '<div class="links">' + cvButtons(s) + '</div></div></div></header>'
-      + '<section class="wrap portals"><p class="portals-title">' + esc(loc(s, "portals_title") || tr("explore")) + '</p><div class="portal-grid">'
+      + '<section class="wrap portals"><p class="portals-title">' + esc(String(loc(s, "portals_title") || tr("explore")).toLowerCase()) + '</p><div class="portal-grid">'
       + portal("photography", "#2B2D31") + portal("academic", FX_COLOR.academic) + portal("events", "#B4441F")
       + '</div></section>' + footer(s);
   }
