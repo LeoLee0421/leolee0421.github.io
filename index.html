@@ -379,7 +379,7 @@ var DATA = {
   var OLD = { articles: "academic", teaching: "academic", referee: "events" };
   // 轉場時放大的圓用的顏色（各頁的主色）
   var FX_COLOR = { academic: "#1E3A5F", photography: "#0F1012", events: "#2A1A14" };
-  var D = Object.assign({ Event: [], EventSections: [], EventTeams: [], EventSchedule: [] }, DATA);
+  var D = Object.assign({ Event: [], EventSections: [], EventTeams: [], EventSchedule: [], PhotoFiles: [] }, DATA);
   var route = { view: "home", album: null };
 
   /* ---------- 語言 ---------- */
@@ -572,11 +572,36 @@ var DATA = {
   }
 
   /* ---------- 攝影 ---------- */
-  function albumPhotos(a) {
+  // 手動填在 photo 開頭欄位的照片
+  function manualPhotos(a) {
     return Object.keys(a).filter(function (k) { return /^photo/.test(k) && a[k]; }).map(function (k) { return a[k]; });
   }
+  // drive_url 資料夾裡的所有照片（PhotoFiles 分頁，由試算表的 Apps Script「更新照片清單」產生）
+  function folderId(u) { var m = String(u || "").match(/folders\/([\w-]+)/); return m ? m[1] : ""; }
+  function folderFiles(a) {
+    var id = folderId(a.drive_url);
+    if (!id) return [];
+    return rows("PhotoFiles").filter(function (f) { return f.folder_id === id && f.file_id; })
+      .map(function (f) { return "https://drive.google.com/file/d/" + f.file_id + "/view"; });
+  }
+  // 資料夾有照片清單就隨機挑 gallery_random_count 張（預設 20），否則用手動填的照片；
+  // 每次打開網頁只挑一次，切換語言或頁面時維持同一組
+  var picked = {};
+  function albumPhotos(a) {
+    var pool = folderFiles(a);
+    if (!pool.length) return manualPhotos(a);
+    var key = folderId(a.drive_url) + ":" + pool.length;
+    if (!picked[key]) {
+      var n = parseInt(settings().gallery_random_count, 10) || 20, arr = pool.slice();
+      for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+      picked[key] = arr.slice(0, n);
+    }
+    return picked[key];
+  }
+  function albumCover(a) { return a.cover || manualPhotos(a)[0] || folderFiles(a)[0]; }
+  function albumCount(a) { return folderFiles(a).length || manualPhotos(a).length; }
   function albums() {
-    return rows("Photos").filter(function (a) { return loc(a, "title") || a.drive_url || albumPhotos(a).length; });
+    return rows("Photos").filter(function (a) { return loc(a, "title") || a.drive_url || manualPhotos(a).length; });
   }
   function albumMeta(a) { return [a.date, loc(a, "location")].filter(Boolean).map(esc).join(" · "); }
   function photographyHTML(s) {
@@ -586,12 +611,12 @@ var DATA = {
       + (s.instagram_handle ? " · " + esc(s.instagram_handle) : "") + ' ↗</a></div>' : "";
     return topbar() + '<div class="wrap gallery-head"><h1>' + esc(tr("photography")) + '</h1><p class="lead">' + esc(loc(s, "photo_intro") || tr("photoLead")) + '</p>' + ig + '</div>'
       + '<div class="wrap albums">' + list.map(function (a, i) {
-          var photos = albumPhotos(a), cover = a.cover || photos[0];
+          var count = albumCount(a), cover = albumCover(a);
           var inner = '<div class="cover">' + (cover ? '<img loading="lazy" src="' + esc(imgUrl(cover, 900)) + '" alt="">' : ICONS.photography) + '</div>'
             + '<div class="cap"><b>' + esc(loc(a, "title")) + '</b><span>' + albumMeta(a)
-            + (photos.length ? (albumMeta(a) ? " · " : "") + photos.length + " " + esc(tr("photos")) : "") + '</span></div>';
-          // 沒有精選照片的活動，直接連到 Google Drive
-          return photos.length ? '<a class="album-card" href="#photography/' + i + '" data-album="' + i + '">' + inner + '</a>'
+            + (count ? (albumMeta(a) ? " · " : "") + count + " " + esc(tr("photos")) : "") + '</span></div>';
+          // 沒有任何照片的活動，直接連到 Google Drive
+          return count ? '<a class="album-card" href="#photography/' + i + '" data-album="' + i + '">' + inner + '</a>'
             : '<a class="album-card" href="' + esc(a.drive_url || "#") + '" target="_blank" rel="noopener">' + inner + '</a>';
         }).join("") + '</div>' + footer(s);
   }
@@ -850,7 +875,7 @@ var DATA = {
   // 分頁不存在時 Google 會改回傳第一個分頁，所以用「必須有的欄位」確認讀到的是對的分頁
   var TABS = {
     Settings: "key", Projects: "title", Columns: "title", Teaching: "course", Referee: "event", Photos: "title",
-    Event: "field", EventSections: "type", EventTeams: "team", EventSchedule: "item"
+    Event: "field", EventSections: "type", EventTeams: "team", EventSchedule: "item", PhotoFiles: "file_id"
   };
   function fetchTab(name) {
     var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&headers=1&sheet=" + encodeURIComponent(name);
