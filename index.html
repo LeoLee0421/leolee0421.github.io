@@ -207,7 +207,7 @@
 
   /* ===== 賽事（UJ CUP）：藍黃為主色，文字區一律白底黑字 ===== */
   .ev{
-    --ev-blue:#1747A6; --ev-yellow:#FFC629; --ev-ink:#111418; --ev-muted:#4B5260; --ev-line:#E2E6EE; --ev-page:#EEF2F9;
+    --ev-blue:#124A84; --ev-yellow:#F2B900;   /* 取自 UJ CUP 海報 */ --ev-ink:#111418; --ev-muted:#4B5260; --ev-line:#E2E6EE; --ev-page:#EEF2F9;
     background:var(--ev-page); color:var(--ev-ink); min-height:100vh; font-family:var(--sans);
   }
   .ev a{ color:var(--ev-blue); }
@@ -222,17 +222,15 @@
   .ev-tabs a:hover{ border-bottom-color:var(--ev-yellow); }
   .ev-nav .lang{ color:#fff; flex:none; }
 
-  /* 主視覺：hero_url 寬幅大圖滿版；沒有就把海報放在藍底上 */
+  /* 主視覺：hero_url 寬幅大圖滿版；沒有就把海報放在白底上，寬度比下方內容區略寬 */
   .ev-hero img.wide{ width:100%; height:auto; display:block; }
-  .ev-hero .stage{
-    display:flex; justify-content:center; align-items:center; padding:40px 24px;
-    background:var(--ev-blue) linear-gradient(135deg, transparent 0 62%, var(--ev-yellow) 62% 66%, transparent 66% 72%, var(--ev-yellow) 72% 73%, transparent 73%);
-  }
-  .ev-hero .stage img{ max-height:620px; max-width:100%; width:auto; box-shadow:0 18px 50px rgba(0,0,0,.35); cursor:zoom-in; }
-  .ev-hero .stage .word{ font-size:72px; font-weight:800; color:var(--ev-yellow); letter-spacing:.04em; padding:60px 0; }
+  .ev-hero{ background:#fff; }
+  .ev-hero .stage{ display:flex; justify-content:center; align-items:center; padding:28px 16px 12px; }
+  .ev-hero .stage img{ width:min(1140px, 100%); height:auto; cursor:zoom-in; }
+  .ev-hero .stage .word{ font-size:72px; font-weight:800; color:var(--ev-blue); letter-spacing:.04em; padding:60px 0; }
 
   /* 賽事資訊總覽卡 */
-  .ev-summary{ position:relative; margin-top:-36px; }
+  .ev-summary{ position:relative; padding-top:24px; }
   .ev-card{ background:#fff; color:var(--ev-ink); border-radius:10px; box-shadow:0 4px 18px rgba(17,20,24,.06); padding:28px 32px; }
   .ev-summary .ev-card{ border-top:6px solid var(--ev-yellow); }
   .ev-kicker{ font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ev-blue); }
@@ -342,10 +340,9 @@
     .lightbox img{ max-width:100%; }
     .ev-nav-inner{ gap:14px; }
     .ev-tabs{ gap:14px; font-size:14px; }
-    .ev-hero .stage{ padding:24px 16px; }
-    .ev-hero .stage img{ max-height:440px; }
+    .ev-hero .stage{ padding:16px 8px 4px; }
     .ev-hero .stage .word{ font-size:48px; }
-    .ev-summary{ margin-top:-20px; }
+    .ev-summary{ padding-top:16px; }
     .ev-card{ padding:22px 18px; border-radius:8px; }
     .ev-summary h1{ font-size:26px; }
     .ev-facts{ grid-template-columns:1fr 1fr; }
