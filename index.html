@@ -572,12 +572,23 @@ var DATA = {
   }
 
   /* ---------- 攝影 ---------- */
-  // 手動填在 photo 開頭欄位的照片
-  function manualPhotos(a) {
-    return Object.keys(a).filter(function (k) { return /^photo/.test(k) && a[k]; }).map(function (k) { return a[k]; });
-  }
   // drive_url 資料夾裡的所有照片（PhotoFiles 分頁，由試算表的 Apps Script「更新照片清單」產生）
   function folderId(u) { var m = String(u || "").match(/folders\/([\w-]+)/); return m ? m[1] : ""; }
+  // cover 與 photo 欄位可填連結，也可只填檔名（例如 IMG_0123 或 IMG_0123.JPG），用檔名到該活動的資料夾清單裡找
+  function photoRef(a, v) {
+    v = String(v || "").trim();
+    if (!v || v.indexOf("/") >= 0) return v;
+    var id = folderId(a.drive_url), want = v.toLowerCase().replace(/\.[^.]+$/, "");
+    var hit = rows("PhotoFiles").filter(function (f) {
+      return f.folder_id === id && String(f.name || "").toLowerCase().replace(/\.[^.]+$/, "") === want;
+    })[0];
+    return hit ? "https://drive.google.com/file/d/" + hit.file_id + "/view" : "";
+  }
+  // 手動填在 photo 開頭欄位的照片
+  function manualPhotos(a) {
+    return Object.keys(a).filter(function (k) { return /^photo/.test(k) && a[k]; })
+      .map(function (k) { return photoRef(a, a[k]); }).filter(Boolean);
+  }
   function folderFiles(a) {
     var id = folderId(a.drive_url);
     if (!id) return [];
@@ -598,7 +609,7 @@ var DATA = {
     }
     return picked[key];
   }
-  function albumCover(a) { return a.cover || manualPhotos(a)[0] || folderFiles(a)[0]; }
+  function albumCover(a) { return photoRef(a, a.cover) || manualPhotos(a)[0] || folderFiles(a)[0]; }
   function albumCount(a) { return folderFiles(a).length || manualPhotos(a).length; }
   function albums() {
     return rows("Photos").filter(function (a) { return loc(a, "title") || a.drive_url || manualPhotos(a).length; });
