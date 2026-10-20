@@ -595,17 +595,21 @@ var DATA = {
     return rows("PhotoFiles").filter(function (f) { return f.folder_id === id && f.file_id; })
       .map(function (f) { return "https://drive.google.com/file/d/" + f.file_id + "/view"; });
   }
-  // 資料夾有照片清單就隨機挑 gallery_random_count 張（預設 20），否則用手動填的照片；
-  // 每次打開網頁只挑一次，切換語言或頁面時維持同一組
+  // 藝廊照片：photo 欄位填的最愛照片排最前面，不足 gallery_random_count 張（預設 20）時，
+  // 從資料夾其他照片隨機補足；每次打開網頁只挑一次，切換語言或頁面時維持同一組
   var picked = {};
+  function fileId(u) { var m = String(u).match(/\/d\/([\w-]+)/); return m ? m[1] : u; }
   function albumPhotos(a) {
-    var pool = folderFiles(a);
-    if (!pool.length) return manualPhotos(a);
-    var key = folderId(a.drive_url) + ":" + pool.length;
+    var favs = manualPhotos(a), pool = folderFiles(a);
+    if (!pool.length) return favs;
+    var key = folderId(a.drive_url) + ":" + pool.length + ":" + favs.join("|");
     if (!picked[key]) {
-      var n = parseInt(settings().gallery_random_count, 10) || 20, arr = pool.slice();
-      for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
-      picked[key] = arr.slice(0, n);
+      var n = parseInt(settings().gallery_random_count, 10) || 20;
+      var taken = {};
+      favs.forEach(function (u) { taken[fileId(u)] = true; });
+      var rest = pool.filter(function (u) { return !taken[fileId(u)]; });
+      for (var i = rest.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = rest[i]; rest[i] = rest[j]; rest[j] = t; }
+      picked[key] = favs.concat(rest.slice(0, Math.max(0, n - favs.length)));
     }
     return picked[key];
   }
