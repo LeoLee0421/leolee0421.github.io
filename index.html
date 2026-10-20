@@ -145,16 +145,19 @@
   .portal-fx.on{ display:block; }
 
   /* ===== 學術 ===== */
-  .academic{ display:grid; grid-template-columns:250px 1fr; gap:56px; padding-top:44px; }
+  .academic{ display:grid; grid-template-columns:300px 1fr; gap:64px; padding-top:48px; }
   .side{ position:sticky; top:84px; align-self:start; }
-  .side img{ width:180px; height:210px; object-fit:cover; border-radius:4px; background:var(--line); margin-bottom:18px; }
-  .side .name{ font-size:22px; font-weight:600; line-height:1.3; }
-  .side .alt{ color:var(--muted); margin-bottom:12px; }
-  .side ul{ list-style:none; padding:0; margin:0 0 16px; font-family:var(--sans); font-size:14px; color:var(--muted); line-height:1.55; }
-  .side ul li{ margin-bottom:6px; }
-  .side .links{ flex-direction:column; align-items:flex-start; gap:6px; }
-  .side .links a{ border:0; padding:0; color:var(--accent); }
+  .side img{ width:100%; max-width:260px; aspect-ratio:5/6; height:auto; object-fit:cover; border-radius:4px; background:var(--line); margin-bottom:20px; }
+  .side .name{ font-size:26px; font-weight:600; line-height:1.25; }
+  .side .alt{ font-size:18px; color:var(--muted); margin:2px 0 14px; }
+  .side ul{ list-style:none; padding:0; margin:0 0 20px; font-family:var(--sans); font-size:15px; color:var(--muted); line-height:1.5; }
+  .side ul li{ margin-bottom:8px; }
+  /* 側欄連結：一行一個，CV 用外框按鈕突顯 */
+  .side .links{ flex-direction:column; align-items:flex-start; gap:8px; font-size:15px; }
+  .side .links a{ border:0; padding:0; color:var(--accent); background:none; }
   .side .links a:hover{ border-bottom:1px solid currentColor; }
+  .side .links a.primary{ border:1px solid var(--accent); border-radius:20px; padding:5px 16px; margin-bottom:4px; font-weight:600; color:var(--accent); background:none; }
+  .side .links a.primary:hover{ background:var(--accent); color:var(--bg); }
   .academic main h2:first-child{ margin-top:0; }
   .bio-text p{ margin:0 0 12px; max-width:70ch; }
 
@@ -250,9 +253,11 @@
     .portal-grid{ grid-template-columns:1fr; gap:36px; }
     .ring{ width:180px; }
     .academic{ grid-template-columns:1fr; gap:8px; padding-top:28px; }
-    .side{ position:static; display:grid; grid-template-columns:96px 1fr; gap:0 18px; }
-    .side img{ width:96px; height:116px; grid-row:span 4; }
-    .side .links{ flex-direction:row; gap:6px 14px; }
+    .side{ position:static; display:grid; grid-template-columns:120px 1fr; gap:0 18px; }
+    .side img{ width:120px; grid-row:span 4; margin-bottom:0; }
+    .side .name{ font-size:22px; }
+    .side .links{ flex-direction:row; flex-wrap:wrap; align-items:center; gap:8px 14px; }
+    .side .links a.primary{ margin-bottom:0; }
     .tabs{ gap:14px; }
     .cv li, .log li{ grid-template-columns:1fr; gap:0; }
     .schedule li{ grid-template-columns:64px 1fr; gap:12px; }
