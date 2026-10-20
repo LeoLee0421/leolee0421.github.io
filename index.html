@@ -205,61 +205,112 @@
   .lightbox .close{ top:8px; right:8px; font-size:28px; }
   .lightbox .count{ position:absolute; bottom:18px; left:0; right:0; text-align:center; color:#aaa; font-family:var(--sans); font-size:13px; }
 
-  /* ===== 賽事 ===== */
-  .event-hero{ background:var(--event-deep); color:#fff; }
-  .event-hero-inner{ display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:center; padding-top:64px; padding-bottom:64px; }
-  .event-hero.no-poster .event-hero-inner{ grid-template-columns:1fr; }
-  .kicker{ font-family:var(--sans); font-size:12.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:#F3A27F; }
-  .event-hero h1{ font-size:44px; color:#fff; margin:10px 0 8px; }
-  .event-hero .tagline{ font-size:19px; opacity:.85; margin:0 0 20px; max-width:56ch; }
-  .facts{ display:flex; flex-wrap:wrap; gap:10px 28px; font-family:var(--sans); font-size:15px; margin-bottom:22px; }
-  .facts span{ opacity:.9; }
-  .facts b{ font-weight:600; color:#F3A27F; margin-right:6px; }
-  .badges{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
-  .countdown{ display:inline-block; font-family:var(--sans); font-size:14px; font-weight:600; background:var(--event); color:#fff; padding:6px 14px; border-radius:20px; }
-  .countdown.soft{ background:none; box-shadow:inset 0 0 0 1px #F3A27F; color:#F3A27F; }
-  .countdown.muted{ background:rgba(255,255,255,.14); color:rgba(255,255,255,.75); }
-  .event-hero .closed{ font-family:var(--sans); font-size:14px; padding:6px 14px; border-radius:20px; background:rgba(255,255,255,.14); color:rgba(255,255,255,.7); }
-  .ev-brand{ font-family:var(--sans); font-size:15px; font-weight:600; color:var(--text); white-space:nowrap; cursor:pointer; }
-  .ev-brand:hover{ border-bottom-color:transparent; }
-  #view-events .tabs a{ cursor:pointer; }
-  .news li{ display:grid; grid-template-columns:110px 1fr; gap:16px; }
-  .news .when{ font-family:var(--sans); font-size:13.5px; color:var(--faint); padding-top:3px; }
-  .news .tag.pin{ background:var(--event); color:#fff; }
-  .news-body{ margin-top:4px; }
-  .news-body p{ margin:0 0 6px; max-width:70ch; color:var(--muted); }
-  .more-news summary{ font-family:var(--sans); font-size:14px; color:var(--event); cursor:pointer; padding:10px 0; }
-  .docs{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:12px; }
-  .doc{ display:flex; justify-content:space-between; align-items:center; gap:12px; border:1px solid var(--line); border-radius:6px; padding:12px 16px; color:var(--text); }
-  .doc:hover{ border-color:var(--event); color:var(--text); }
-  .doc b{ display:block; font-weight:600; }
-  .doc small{ display:block; font-family:var(--sans); font-size:13px; color:var(--muted); }
-  .doc i{ font-style:normal; font-family:var(--sans); color:var(--event); font-size:18px; }
-  .kv{ display:grid; grid-template-columns:140px 1fr; gap:10px 20px; margin:0; }
-  .kv dt{ font-family:var(--sans); font-size:14px; font-weight:600; color:var(--faint); padding-top:2px; }
-  .kv dd{ margin:0; }
-  .schedule .result{ font-family:var(--sans); font-size:14px; font-weight:600; white-space:nowrap; }
-  .event-hero .links a{ color:#fff; border-color:rgba(255,255,255,.45); }
-  .event-hero .links a:hover{ border-color:#fff; color:#fff; }
-  .event-hero .links a.primary{ background:var(--event); border-color:var(--event); }
-  .poster img{ width:100%; border-radius:4px; box-shadow:0 20px 50px rgba(0,0,0,.4); cursor:zoom-in; }
-  .events h2{ color:var(--event); }
-  .event-desc p{ margin:0 0 12px; max-width:70ch; }
-  .teams{ display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
-  .division{ border:1px solid var(--line); border-radius:6px; padding:16px 20px 10px; }
-  .division-head{ display:flex; justify-content:space-between; align-items:baseline; padding-bottom:10px; border-bottom:2px solid var(--event); font-family:var(--sans); }
-  .division-head b{ font-size:16px; }
-  .division-head span{ font-size:13px; color:var(--muted); }
-  .division ol{ margin:0; padding:6px 0 0 1.6em; }
-  .division li{ padding:6px 0; border-bottom:1px solid var(--line); }
+  /* ===== 賽事（UJ CUP）：藍黃為主色，文字區一律白底黑字 ===== */
+  .ev{
+    --ev-blue:#1747A6; --ev-yellow:#FFC629; --ev-ink:#111418; --ev-muted:#4B5260; --ev-line:#E2E6EE; --ev-page:#EEF2F9;
+    background:var(--ev-page); color:var(--ev-ink); min-height:100vh; font-family:var(--sans);
+  }
+  .ev a{ color:var(--ev-blue); }
+  .ev-nav{ position:sticky; top:0; z-index:10; background:var(--ev-blue); color:#fff; box-shadow:0 2px 12px rgba(0,0,0,.12); }
+  .ev-nav-inner{ display:flex; align-items:center; gap:24px; padding-top:12px; padding-bottom:12px; }
+  .ev-brand{ font-size:18px; font-weight:800; letter-spacing:.04em; color:var(--ev-yellow) !important; white-space:nowrap; cursor:pointer; border:0; }
+  .ev-nav .back{ color:rgba(255,255,255,.8); }
+  .ev-nav .back:hover{ color:#fff; }
+  .ev-tabs{ display:flex; gap:20px; margin-left:auto; overflow-x:auto; scrollbar-width:none; font-size:14.5px; font-weight:500; }
+  .ev-tabs::-webkit-scrollbar{ display:none; }
+  .ev-tabs a{ color:#fff !important; white-space:nowrap; cursor:pointer; padding:4px 0; border-bottom:2px solid transparent; }
+  .ev-tabs a:hover{ border-bottom-color:var(--ev-yellow); }
+  .ev-nav .lang{ color:#fff; flex:none; }
+
+  /* 主視覺：hero_url 寬幅大圖滿版；沒有就把海報放在藍底上 */
+  .ev-hero img.wide{ width:100%; height:auto; display:block; }
+  .ev-hero .stage{
+    display:flex; justify-content:center; align-items:center; padding:40px 24px;
+    background:var(--ev-blue) linear-gradient(135deg, transparent 0 62%, var(--ev-yellow) 62% 66%, transparent 66% 72%, var(--ev-yellow) 72% 73%, transparent 73%);
+  }
+  .ev-hero .stage img{ max-height:620px; max-width:100%; width:auto; box-shadow:0 18px 50px rgba(0,0,0,.35); cursor:zoom-in; }
+  .ev-hero .stage .word{ font-size:72px; font-weight:800; color:var(--ev-yellow); letter-spacing:.04em; padding:60px 0; }
+
+  /* 賽事資訊總覽卡 */
+  .ev-summary{ position:relative; margin-top:-36px; }
+  .ev-card{ background:#fff; color:var(--ev-ink); border-radius:10px; box-shadow:0 4px 18px rgba(17,20,24,.06); padding:28px 32px; }
+  .ev-summary .ev-card{ border-top:6px solid var(--ev-yellow); }
+  .ev-kicker{ font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ev-blue); }
+  .ev-summary h1{ font-family:var(--sans); font-size:34px; font-weight:800; color:var(--ev-ink); margin:6px 0 4px; letter-spacing:0; }
+  .ev-tagline{ font-size:18px; color:var(--ev-muted); margin:0 0 20px; }
+  .ev-facts{ display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:12px; margin:0 0 20px; }
+  .ev-fact{ border-left:4px solid var(--ev-blue); padding:2px 0 2px 12px; }
+  .ev-fact b{ display:block; font-size:12.5px; font-weight:700; letter-spacing:.06em; color:var(--ev-muted); }
+  .ev-fact span{ display:block; font-size:16.5px; font-weight:600; margin-top:2px; }
+  .ev-badges{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+  .ev-badge{ font-size:14px; font-weight:700; padding:6px 14px; border-radius:20px; background:var(--ev-blue); color:#fff; }
+  .ev-badge.yellow{ background:var(--ev-yellow); color:var(--ev-ink); }
+  .ev-btns{ display:flex; flex-wrap:wrap; gap:10px; }
+  .ev-btn{ display:inline-block; font-size:15px; font-weight:700; padding:10px 22px; border-radius:8px; border:2px solid var(--ev-blue); color:var(--ev-blue) !important; background:#fff; }
+  .ev-btn:hover{ background:var(--ev-blue); color:#fff !important; }
+  .ev-btn.primary{ background:var(--ev-yellow); border-color:var(--ev-yellow); color:var(--ev-ink) !important; }
+  .ev-btn.primary:hover{ filter:brightness(.95); }
+  .ev-btn.off{ border-color:var(--ev-line); color:var(--ev-muted) !important; background:#F4F5F7; cursor:default; }
+
+  /* 各段落 */
+  .ev-body{ display:flex; flex-direction:column; gap:22px; padding-top:22px; padding-bottom:40px; }
+  .ev-body h2{
+    font-family:var(--sans); font-size:22px; font-weight:800; color:var(--ev-ink); margin:0 0 18px; padding:0 0 0 14px;
+    border:0; border-left:6px solid var(--ev-yellow); line-height:1.25;
+  }
+  .ev-body h3{ font-family:var(--sans); font-size:15px; font-weight:700; color:var(--ev-ink); margin:20px 0 6px; padding-left:10px; border-left:3px solid var(--ev-blue); }
+  .ev-body h3:first-child{ margin-top:0; }
+  .ev .list li{ border-bottom-color:var(--ev-line); }
+  .ev .meta{ color:var(--ev-muted); }
+  .ev .title{ font-weight:700; }
+  .ev-text p{ margin:0 0 10px; max-width:75ch; line-height:1.8; }
+  .ev-text p:last-child{ margin-bottom:0; }
+
+  .ev-news{ display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:16px; }
+  .ev-post{ border:1px solid var(--ev-line); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; background:#fff; }
+  .ev-post img{ width:100%; aspect-ratio:16/9; object-fit:cover; background:var(--ev-line); }
+  .ev-post .in{ padding:14px 16px 16px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .ev-post .date{ font-size:13px; font-weight:700; color:var(--ev-blue); }
+  .ev-post .title{ font-size:16.5px; line-height:1.4; }
+  .ev-post p{ margin:0; font-size:14.5px; color:var(--ev-muted); line-height:1.6; }
+  .ev-post .more{ margin-top:auto; padding-top:6px; font-size:14px; font-weight:700; }
+  .ev-pin{ display:inline-block; font-size:11.5px; font-weight:800; background:var(--ev-yellow); color:var(--ev-ink); padding:1px 8px; border-radius:10px; margin-left:6px; vertical-align:2px; }
+  .ev-more-news summary{ font-size:14.5px; font-weight:700; color:var(--ev-blue); cursor:pointer; padding:14px 0 0; }
+  .ev-more-news .ev-news{ margin-top:14px; }
+
+  .teams{ display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:18px; }
+  .division{ border:1px solid var(--ev-line); border-radius:8px; padding:16px 20px 8px; }
+  .division-head{ display:flex; justify-content:space-between; align-items:center; padding-bottom:10px; border-bottom:3px solid var(--ev-blue); }
+  .division-head b{ font-size:17px; font-weight:800; }
+  .division-head span{ font-size:13px; font-weight:700; background:var(--ev-yellow); color:var(--ev-ink); padding:2px 10px; border-radius:12px; }
+  .division ol{ margin:0; padding:6px 0 0 1.7em; }
+  .division li{ padding:7px 0; border-bottom:1px solid var(--ev-line); }
   .division li:last-child{ border-bottom:0; }
-  .division li::marker{ font-family:var(--sans); font-size:13px; color:var(--faint); }
-  .division small{ display:block; font-family:var(--sans); font-size:13px; color:var(--muted); }
-  .map{ margin-top:16px; aspect-ratio:16/7; border-radius:6px; overflow:hidden; border:1px solid var(--line); background:var(--line); }
+  .division li::marker{ font-size:13px; font-weight:700; color:var(--ev-blue); }
+  .division small{ display:block; font-size:13px; color:var(--ev-muted); }
+
+  .schedule li{ display:grid; grid-template-columns:90px 1fr auto; gap:16px; align-items:baseline; }
+  .schedule .when{ font-size:15px; font-weight:800; color:var(--ev-blue); }
+  .schedule .result{ font-size:14px; font-weight:800; white-space:nowrap; }
+  .schedule .result:not(:empty){ background:var(--ev-yellow); padding:2px 10px; border-radius:6px; }
+
+  .map{ margin-top:16px; aspect-ratio:16/7; border-radius:8px; overflow:hidden; border:1px solid var(--ev-line); background:var(--ev-line); }
   .map iframe{ width:100%; height:100%; border:0; display:block; }
-  .map-link{ font-family:var(--sans); font-size:14px; margin:8px 0 0; }
-  .schedule li{ display:grid; grid-template-columns:110px 1fr auto; gap:16px; }
-  .schedule .when{ font-family:var(--sans); font-size:14px; color:var(--event); font-weight:600; padding-top:2px; }
+  .map-link{ font-size:14px; font-weight:700; margin:8px 0 0; }
+
+  .docs{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:12px; }
+  .doc{ display:flex; justify-content:space-between; align-items:center; gap:12px; border:1px solid var(--ev-line); border-radius:8px; padding:14px 16px; color:var(--ev-ink) !important; }
+  .doc:hover{ border-color:var(--ev-blue); }
+  .doc b{ display:block; font-weight:700; }
+  .doc small{ display:block; font-size:13px; color:var(--ev-muted); }
+  .doc i{ flex:none; font-style:normal; width:32px; height:32px; border-radius:50%; background:var(--ev-yellow); color:var(--ev-ink); display:flex; align-items:center; justify-content:center; font-weight:800; }
+
+  .kv{ display:grid; grid-template-columns:150px 1fr; gap:12px 20px; margin:0; }
+  .kv dt{ font-size:14px; font-weight:700; color:var(--ev-muted); padding-top:1px; }
+  .kv dd{ margin:0; font-weight:600; }
+
+  .ev-foot{ background:var(--ev-blue); color:rgba(255,255,255,.85); padding:22px 0 30px; font-size:13.5px; }
+  .ev-foot a{ color:var(--ev-yellow) !important; cursor:pointer; }
   .log li{ display:grid; grid-template-columns:96px 1fr; gap:14px; }
   .log .when{ font-family:var(--sans); font-size:13.5px; color:var(--faint); padding-top:2px; }
   .empty{ color:var(--muted); font-style:italic; }
@@ -283,20 +334,27 @@
     .side .links a.primary{ margin-bottom:0; }
     .tabs{ gap:14px; }
     .cv li, .log li{ grid-template-columns:1fr; gap:0; }
-    .schedule li{ grid-template-columns:64px 1fr auto; gap:12px; }
-    .news li{ grid-template-columns:1fr; gap:0; }
-    .kv{ grid-template-columns:1fr; gap:2px; }
-    .kv dd{ margin-bottom:10px; }
-    .map{ aspect-ratio:4/3; }
     .gallery-head h1{ font-size:34px; }
     .albums{ grid-template-columns:1fr 1fr; gap:22px 14px; }
     .album-card .cap b{ font-size:16px; }
     .masonry{ columns:2; column-gap:8px; }
     .masonry img{ margin-bottom:8px; }
     .lightbox img{ max-width:100%; }
-    .event-hero-inner{ grid-template-columns:1fr; gap:28px; padding-top:44px; padding-bottom:44px; }
-    .event-hero h1{ font-size:32px; }
-    .poster{ max-width:320px; }
+    .ev-nav-inner{ gap:14px; }
+    .ev-tabs{ gap:14px; font-size:14px; }
+    .ev-hero .stage{ padding:24px 16px; }
+    .ev-hero .stage img{ max-height:440px; }
+    .ev-hero .stage .word{ font-size:48px; }
+    .ev-summary{ margin-top:-20px; }
+    .ev-card{ padding:22px 18px; border-radius:8px; }
+    .ev-summary h1{ font-size:26px; }
+    .ev-facts{ grid-template-columns:1fr 1fr; }
+    .ev-btn{ flex:1; text-align:center; }
+    .ev-body h2{ font-size:20px; }
+    .schedule li{ grid-template-columns:56px 1fr auto; gap:10px; }
+    .kv{ grid-template-columns:1fr; gap:2px; }
+    .kv dd{ margin-bottom:10px; }
+    .map{ aspect-ratio:4/3; }
   }
   @media (max-width:440px){
     .albums{ grid-template-columns:1fr; }
@@ -437,6 +495,7 @@ var DATA = {
       moreNews: function (n) { return "Earlier announcements (" + n + ")"; },
       regLeft: function (n) { return n === 1 ? "Registration closes in 1 day" : "Registration closes in " + n + " days"; },
       regToday: "Registration closes today", regClosed: "Registration closed", siteBy: "Website by",
+      divisions: "Divisions", fee: "Entry fee", deadline: "Registration deadline",
       contactName: "Contact person", phone: "Phone", organizer: "Organizer", coOrganizer: "Co-organizer", sponsor: "Sponsors",
       teamCount: function (n) { return n === 1 ? "1 team" : n + " teams"; },
       officiating: "Officiating Record", eventSoon: "Event details coming soon.",
@@ -460,6 +519,7 @@ var DATA = {
       moreNews: function (n) { return "更早的公告（" + n + "）"; },
       regLeft: function (n) { return "報名截止倒數 " + n + " 天"; },
       regToday: "今天報名截止", regClosed: "報名已截止", siteBy: "網站製作",
+      divisions: "比賽組別", fee: "報名費", deadline: "報名截止",
       contactName: "聯絡人", phone: "電話", organizer: "主辦單位", coOrganizer: "協辦單位", sponsor: "贊助單位",
       teamCount: function (n) { return n + " 隊"; },
       officiating: "裁判執法紀錄", eventSoon: "賽事資訊即將公布。",
@@ -703,44 +763,55 @@ var DATA = {
     return '<a' + (cls ? ' class="' + cls + '"' : "") + ' href="' + esc(url) + '" target="_blank" rel="noopener">' + text + '</a>';
   }
 
-  // 賽事頁是獨立的賽事資訊網：上方列放賽事名稱與段落導覽，從個人首頁點進來時才顯示「← Home」
+  // 賽事頁是獨立的賽事資訊網：上方藍色導覽列、主視覺、白底黑字的資訊卡片；從個人首頁點進來時才顯示「← Home」
   function eventsHTML(s) {
-    var e = eventInfo(), name = loc(e, "name"), poster = e.poster_url;
+    var e = eventInfo(), name = loc(e, "name"), short = loc(e, "short_name") || name || tr("events");
+    var hero = e.hero_url, poster = e.poster_url;
     var dateText = loc(e, "date_text") || [e.start_date, e.end_date].filter(Boolean).join(" – ");
     var days = daysUntil(e.start_date), reg = daysUntil(e.register_deadline), closed = reg != null && reg < 0;
-    var btns = [];
-    if (e.register_url) btns.push(closed ? '<span class="closed">' + esc(tr("regClosed")) + '</span>' : ext(e.register_url, esc(tr("register")) + " ↗", "primary"));
-    if (e.rules_url) btns.push(ext(e.rules_url, esc(tr("rules")) + " ↗"));
-    if (e.website) btns.push(ext(e.website, esc(tr("website")) + " ↗"));
-    if (e.instagram) btns.push(ext(e.instagram, "Instagram ↗"));
-    var facts = [[tr("date"), dateText], [tr("venue"), loc(e, "venue")]]
-      .filter(function (f) { return f[1]; }).map(function (f) { return '<span><b>' + esc(f[0]) + '</b>' + esc(f[1]) + '</span>'; }).join("");
-    var badges = [];
-    if (days != null && days >= 0) badges.push('<span class="countdown">' + esc(days === 0 ? tr("today") : tr("daysToGo")(days)) + '</span>');
-    // 報名截止後，報名按鈕本身會換成「報名已截止」，這裡就不再重複
-    if (reg != null && !closed && e.register_url) badges.push('<span class="countdown soft">' + esc(reg === 0 ? tr("regToday") : tr("regLeft")(reg)) + '</span>');
+    var colors = (e.color_blue ? "--ev-blue:" + esc(e.color_blue) + ";" : "") + (e.color_yellow ? "--ev-yellow:" + esc(e.color_yellow) + ";" : "");
 
-    var hero = '<section class="event-hero' + (poster ? "" : " no-poster") + '"><div class="wrap event-hero-inner"><div>'
-      + (loc(e, "kicker") ? '<div class="kicker">' + esc(loc(e, "kicker")) + '</div>' : "")
+    var btns = [];
+    if (e.register_url) btns.push(closed ? '<span class="ev-btn off">' + esc(tr("regClosed")) + '</span>' : ext(e.register_url, esc(tr("register")) + " ↗", "ev-btn primary"));
+    if (e.rules_url) btns.push(ext(e.rules_url, esc(tr("rules")) + " ↗", "ev-btn"));
+    if (e.website) btns.push(ext(e.website, esc(tr("website")) + " ↗", "ev-btn"));
+    if (e.instagram) btns.push(ext(e.instagram, "Instagram ↗", "ev-btn"));
+    var facts = [[tr("date"), dateText], [tr("venue"), loc(e, "venue")], [tr("divisions"), loc(e, "divisions")],
+      [tr("fee"), loc(e, "fee")], [tr("deadline"), loc(e, "register_deadline_text") || e.register_deadline]]
+      .filter(function (f) { return f[1]; })
+      .map(function (f) { return '<div class="ev-fact"><b>' + esc(f[0]) + '</b><span>' + esc(f[1]) + '</span></div>'; }).join("");
+    var badges = [];
+    if (days != null && days >= 0) badges.push('<span class="ev-badge">' + esc(days === 0 ? tr("today") : tr("daysToGo")(days)) + '</span>');
+    if (reg != null && !closed && e.register_url) badges.push('<span class="ev-badge yellow">' + esc(reg === 0 ? tr("regToday") : tr("regLeft")(reg)) + '</span>');
+
+    var visual = hero ? '<img class="wide" src="' + esc(imgUrl(hero, 2400)) + '" alt="' + esc(name) + '">'
+      : '<div class="stage">' + (poster ? '<img src="' + esc(imgUrl(poster, 1400)) + '" data-full="' + esc(imgUrl(poster, 2400)) + '" alt="' + esc(name) + '">'
+        : '<span class="word">' + esc(short) + '</span>') + '</div>';
+
+    var summary = '<section class="wrap ev-summary"><div class="ev-card">'
+      + (loc(e, "kicker") ? '<div class="ev-kicker">' + esc(loc(e, "kicker")) + '</div>' : "")
       + '<h1>' + esc(name || tr("events")) + '</h1>'
-      + (loc(e, "tagline") ? '<p class="tagline">' + esc(loc(e, "tagline")) + '</p>' : (name ? "" : '<p class="tagline">' + esc(tr("eventSoon")) + '</p>'))
-      + (facts ? '<div class="facts">' + facts + '</div>' : "")
-      + (badges.length ? '<div class="badges">' + badges.join("") + '</div>' : "")
-      + (btns.length ? '<div class="links">' + btns.join("") + '</div>' : "")
-      + '</div>' + (poster ? '<div class="poster"><img src="' + esc(imgUrl(poster, 1200)) + '" data-full="' + esc(imgUrl(poster, 2000)) + '" alt="' + esc(name) + '"></div>' : "")
+      + '<p class="ev-tagline">' + esc(loc(e, "tagline") || (name ? "" : tr("eventSoon"))) + '</p>'
+      + (facts ? '<div class="ev-facts">' + facts + '</div>' : "")
+      + (badges.length ? '<div class="ev-badges">' + badges.join("") + '</div>' : "")
+      + (btns.length ? '<div class="ev-btns">' + btns.join("") + '</div>' : "")
       + '</div></section>';
 
-    var secs = eventSections(s, e);
+    var secs = eventSections(s, e), ref = refereeHTML(s);
     var tabs = secs.filter(function (x) { return x.title; })
       .map(function (x) { return '<a data-scroll="' + x.id + '">' + esc(x.title) + '</a>'; }).join("");
     var left = cameFromHome ? '<a class="back" data-go="home">' + esc(tr("home")) + '</a>'
-      : '<a class="ev-brand" data-scroll="top">' + esc(loc(e, "short_name") || name || tr("events")) + '</a>';
-    return '<nav class="topbar"><div class="wrap topbar-inner">' + left + '<div class="tabs">' + tabs + '</div>' + langBtn() + '</div></nav>'
-      + hero + '<div class="wrap events">'
-      + secs.map(function (x) { return (x.title ? '<h2 id="' + x.id + '">' + esc(x.title) + '</h2>' : '<div id="' + x.id + '"></div>') + x.html; }).join("")
-      + refereeHTML(s) + '</div>'
-      + '<footer><div class="wrap">© ' + new Date().getFullYear() + " " + esc(loc(e, "short_name") || name || "")
-      + ' · ' + esc(tr("siteBy")) + ' <a data-go="home">' + esc(names(s)[0] || "") + '</a></div></footer>';
+      : '<a class="ev-brand" data-scroll="top">' + esc(short) + '</a>';
+
+    return '<div class="ev" style="' + colors + '">'
+      + '<nav class="ev-nav"><div class="wrap ev-nav-inner">' + left + '<div class="ev-tabs">' + tabs + '</div>' + langBtn() + '</div></nav>'
+      + '<header class="ev-hero">' + visual + '</header>' + summary
+      + '<main class="wrap ev-body">'
+      + secs.map(function (x) { return '<section class="ev-card" id="' + x.id + '">' + (x.title ? '<h2>' + esc(x.title) + '</h2>' : "") + x.html + '</section>'; }).join("")
+      + (ref ? '<section class="ev-card">' + ref + '</section>' : "")
+      + '</main>'
+      + '<footer class="ev-foot"><div class="wrap">© ' + new Date().getFullYear() + " " + esc(short)
+      + ' · ' + esc(tr("siteBy")) + ' <a data-go="home">' + esc(names(s)[0] || "") + '</a></div></footer></div>';
   }
 
   // EventSections 分頁由上而下決定段落順序。type：留空＝文字段落，
@@ -765,26 +836,28 @@ var DATA = {
   }
   function textSection(r) {
     var body = loc(r, "body"), map = String(r.map || "").trim();
-    return (body ? '<div class="event-desc">' + paragraphs(body) + '</div>' : "")
+    return (body ? '<div class="ev-text">' + paragraphs(body) + '</div>' : "")
       + (map ? '<div class="map"><iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="' + esc(map) + '" src="https://maps.google.com/maps?q='
         + encodeURIComponent(map) + '&output=embed"></iframe></div><p class="map-link">'
         + ext("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(map), esc(tr("openMap"))) + '</p>' : "");
   }
-  // 最新公告：pin 填 yes 的置頂，其餘照試算表順序（新的放上面）；超過 5 則的收合起來
+  // 最新公告：pin 填 yes 的置頂，其餘照試算表順序（新的放上面）；超過 6 則的收合起來
   function newsHTML() {
     var list = rows("EventNews").filter(function (n) { return loc(n, "title"); });
     if (!list.length) return "";
     list = list.filter(function (n) { return yes(n.pin); }).concat(list.filter(function (n) { return !yes(n.pin); }));
+    // 公告卡片：image 欄填 Drive 圖片連結就會有封面圖
     var item = function (n) {
       var body = loc(n, "body");
-      return '<li><span class="when">' + esc(loc(n, "date")) + '</span><div><span class="title">' + esc(loc(n, "title")) + '</span>'
-        + (yes(n.pin) ? '<span class="tag pin">' + esc(tr("pinned")) + '</span>' : "")
-        + (body ? '<div class="news-body">' + paragraphs(body) + '</div>' : "")
-        + (n.url ? '<span class="meta">' + ext(n.url, esc(tr("readMore"))) + '</span>' : "") + '</div></li>';
+      return '<article class="ev-post">' + (n.image ? '<img loading="lazy" src="' + esc(imgUrl(n.image, 800)) + '" alt="">' : "")
+        + '<div class="in"><span class="date">' + esc(loc(n, "date")) + '</span>'
+        + '<span class="title">' + esc(loc(n, "title")) + (yes(n.pin) ? '<span class="ev-pin">' + esc(tr("pinned")) + '</span>' : "") + '</span>'
+        + (body ? paragraphs(body) : "")
+        + (n.url ? '<span class="more">' + ext(n.url, esc(tr("readMore"))) + '</span>' : "") + '</div></article>';
     };
-    var shown = list.slice(0, 5), more = list.slice(5);
-    return '<ul class="list news">' + shown.map(item).join("") + '</ul>'
-      + (more.length ? '<details class="more-news"><summary>' + esc(tr("moreNews")(more.length)) + '</summary><ul class="list news">' + more.map(item).join("") + '</ul></details>' : "");
+    var shown = list.slice(0, 6), more = list.slice(6);
+    return '<div class="ev-news">' + shown.map(item).join("") + '</div>'
+      + (more.length ? '<details class="ev-more-news"><summary>' + esc(tr("moreNews")(more.length)) + '</summary><div class="ev-news">' + more.map(item).join("") + '</div></details>' : "");
   }
   function teamsHTML() {
     // 用 division 或 division_zh 分組，只填其中一欄也能正確分組
@@ -1003,7 +1076,7 @@ var DATA = {
       if (sec) window.scrollTo({ top: sec.getBoundingClientRect().top + scrollY - 70, behavior: "smooth" });
       return;
     }
-    if ((t = e.target.closest(".masonry img, .poster img"))) boxOpen(t);
+    if ((t = e.target.closest(".masonry img, .ev-hero .stage img"))) boxOpen(t);
   });
   window.addEventListener("popstate", function () { var r = parseHash(); go(r.view, r.album, false); });
 
