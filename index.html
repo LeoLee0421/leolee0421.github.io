@@ -558,7 +558,8 @@ var DATA = {
     return topbar('<div class="tabs">' + tabs + '</div>')
       + '<div class="wrap academic"><aside class="side">' + profileImg(s)
       + '<div class="name">' + esc(n[0] || "") + '</div>' + (n[1] ? '<div class="alt">' + esc(n[1]) + '</div>' : "")
-      + '<ul>' + roles(s).map(function (r) { return '<li>' + esc(r) + '</li>'; }).join("") + '</ul>'
+      // 學術頁不列裁判身分
+      + '<ul>' + roles(s).filter(function (r) { return !/referee|裁判/i.test(r); }).map(function (r) { return '<li>' + esc(r) + '</li>'; }).join("") + '</ul>'
       + '<div class="links">' + cvButtons(s) + '</div></aside><main>'
       + (bio ? '<h2 id="sec-about">' + esc(tr("about")) + '</h2><div class="bio-text">' + paragraphs(bio) + '</div>' : "")
       + (projects.length ? '<h2 id="sec-research">' + esc(tr("research")) + '</h2><ul class="list cv">' + projects.map(projectItem).join("") + '</ul>' : "")
