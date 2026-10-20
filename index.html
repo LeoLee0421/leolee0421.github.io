@@ -215,7 +215,30 @@
   .facts{ display:flex; flex-wrap:wrap; gap:10px 28px; font-family:var(--sans); font-size:15px; margin-bottom:22px; }
   .facts span{ opacity:.9; }
   .facts b{ font-weight:600; color:#F3A27F; margin-right:6px; }
-  .countdown{ display:inline-block; font-family:var(--sans); font-size:14px; font-weight:600; background:var(--event); color:#fff; padding:6px 14px; border-radius:20px; margin-bottom:22px; }
+  .badges{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
+  .countdown{ display:inline-block; font-family:var(--sans); font-size:14px; font-weight:600; background:var(--event); color:#fff; padding:6px 14px; border-radius:20px; }
+  .countdown.soft{ background:none; box-shadow:inset 0 0 0 1px #F3A27F; color:#F3A27F; }
+  .countdown.muted{ background:rgba(255,255,255,.14); color:rgba(255,255,255,.75); }
+  .event-hero .closed{ font-family:var(--sans); font-size:14px; padding:6px 14px; border-radius:20px; background:rgba(255,255,255,.14); color:rgba(255,255,255,.7); }
+  .ev-brand{ font-family:var(--sans); font-size:15px; font-weight:600; color:var(--text); white-space:nowrap; cursor:pointer; }
+  .ev-brand:hover{ border-bottom-color:transparent; }
+  #view-events .tabs a{ cursor:pointer; }
+  .news li{ display:grid; grid-template-columns:110px 1fr; gap:16px; }
+  .news .when{ font-family:var(--sans); font-size:13.5px; color:var(--faint); padding-top:3px; }
+  .news .tag.pin{ background:var(--event); color:#fff; }
+  .news-body{ margin-top:4px; }
+  .news-body p{ margin:0 0 6px; max-width:70ch; color:var(--muted); }
+  .more-news summary{ font-family:var(--sans); font-size:14px; color:var(--event); cursor:pointer; padding:10px 0; }
+  .docs{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:12px; }
+  .doc{ display:flex; justify-content:space-between; align-items:center; gap:12px; border:1px solid var(--line); border-radius:6px; padding:12px 16px; color:var(--text); }
+  .doc:hover{ border-color:var(--event); color:var(--text); }
+  .doc b{ display:block; font-weight:600; }
+  .doc small{ display:block; font-family:var(--sans); font-size:13px; color:var(--muted); }
+  .doc i{ font-style:normal; font-family:var(--sans); color:var(--event); font-size:18px; }
+  .kv{ display:grid; grid-template-columns:140px 1fr; gap:10px 20px; margin:0; }
+  .kv dt{ font-family:var(--sans); font-size:14px; font-weight:600; color:var(--faint); padding-top:2px; }
+  .kv dd{ margin:0; }
+  .schedule .result{ font-family:var(--sans); font-size:14px; font-weight:600; white-space:nowrap; }
   .event-hero .links a{ color:#fff; border-color:rgba(255,255,255,.45); }
   .event-hero .links a:hover{ border-color:#fff; color:#fff; }
   .event-hero .links a.primary{ background:var(--event); border-color:var(--event); }
@@ -235,7 +258,7 @@
   .map{ margin-top:16px; aspect-ratio:16/7; border-radius:6px; overflow:hidden; border:1px solid var(--line); background:var(--line); }
   .map iframe{ width:100%; height:100%; border:0; display:block; }
   .map-link{ font-family:var(--sans); font-size:14px; margin:8px 0 0; }
-  .schedule li{ display:grid; grid-template-columns:110px 1fr; gap:16px; }
+  .schedule li{ display:grid; grid-template-columns:110px 1fr auto; gap:16px; }
   .schedule .when{ font-family:var(--sans); font-size:14px; color:var(--event); font-weight:600; padding-top:2px; }
   .log li{ display:grid; grid-template-columns:96px 1fr; gap:14px; }
   .log .when{ font-family:var(--sans); font-size:13.5px; color:var(--faint); padding-top:2px; }
@@ -260,7 +283,10 @@
     .side .links a.primary{ margin-bottom:0; }
     .tabs{ gap:14px; }
     .cv li, .log li{ grid-template-columns:1fr; gap:0; }
-    .schedule li{ grid-template-columns:64px 1fr; gap:12px; }
+    .schedule li{ grid-template-columns:64px 1fr auto; gap:12px; }
+    .news li{ grid-template-columns:1fr; gap:0; }
+    .kv{ grid-template-columns:1fr; gap:2px; }
+    .kv dd{ margin-bottom:10px; }
     .map{ aspect-ratio:4/3; }
     .gallery-head h1{ font-size:34px; }
     .albums{ grid-template-columns:1fr 1fr; gap:22px 14px; }
@@ -384,8 +410,9 @@ var DATA = {
   var OLD = { articles: "academic", teaching: "academic", referee: "events" };
   // 轉場時放大的圓用的顏色（各頁的主色）
   var FX_COLOR = { academic: "#1E3A5F", photography: "#0F1012", events: "#2A1A14" };
-  var D = Object.assign({ Event: [], EventSections: [], EventTeams: [], EventSchedule: [], PhotoFiles: [] }, DATA);
+  var D = Object.assign({ Event: [], EventSections: [], EventTeams: [], EventSchedule: [], EventNews: [], EventDocs: [], PhotoFiles: [] }, DATA);
   var route = { view: "home", album: null };
+  var cameFromHome = false;   // 從個人首頁點進賽事頁時才顯示「← Home」
 
   /* ---------- 語言 ---------- */
   var lang = "en";
@@ -405,6 +432,12 @@ var DATA = {
       daysToGo: function (n) { return n === 1 ? "1 day to go" : n + " days to go"; }, today: "Happening today",
       register: "Register", rules: "Rules", website: "Website", contact: "Contact",
       eventAbout: "About the Event", teams: "Registered Teams", schedule: "Schedule", openMap: "Open in Google Maps ↗",
+      sec_news: "Announcements", sec_teams: "Registered Teams", sec_schedule: "Schedule", sec_docs: "Downloads",
+      sec_contact: "Contact", sec_organizers: "Organizers", pinned: "Pinned", readMore: "Details ↗",
+      moreNews: function (n) { return "Earlier announcements (" + n + ")"; },
+      regLeft: function (n) { return n === 1 ? "Registration closes in 1 day" : "Registration closes in " + n + " days"; },
+      regToday: "Registration closes today", regClosed: "Registration closed", siteBy: "Website by",
+      contactName: "Contact person", phone: "Phone", organizer: "Organizer", coOrganizer: "Co-organizer", sponsor: "Sponsors",
       teamCount: function (n) { return n === 1 ? "1 team" : n + " teams"; },
       officiating: "Officiating Record", eventSoon: "Event details coming soon.",
       refereeLead: "Class C Referee, Chinese Taipei Volleyball Association"
@@ -422,6 +455,12 @@ var DATA = {
       daysToGo: function (n) { return "倒數 " + n + " 天"; }, today: "今天開賽",
       register: "報名", rules: "賽程簡章", website: "官方網站", contact: "聯絡我們",
       eventAbout: "賽事介紹", teams: "報名隊伍", schedule: "預定賽程", openMap: "在 Google 地圖開啟 ↗",
+      sec_news: "最新公告", sec_teams: "報名隊伍", sec_schedule: "預定賽程", sec_docs: "檔案下載",
+      sec_contact: "聯絡我們", sec_organizers: "主協辦單位", pinned: "置頂", readMore: "詳細內容 ↗",
+      moreNews: function (n) { return "更早的公告（" + n + "）"; },
+      regLeft: function (n) { return "報名截止倒數 " + n + " 天"; },
+      regToday: "今天報名截止", regClosed: "報名已截止", siteBy: "網站製作",
+      contactName: "聯絡人", phone: "電話", organizer: "主辦單位", coOrganizer: "協辦單位", sponsor: "贊助單位",
       teamCount: function (n) { return n + " 隊"; },
       officiating: "裁判執法紀錄", eventSoon: "賽事資訊即將公布。",
       refereeLead: "中華民國排球協會 C 級裁判"
@@ -660,56 +699,97 @@ var DATA = {
     now = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     return Math.round((start - now) / 86400000);
   }
+  function ext(url, text, cls) {
+    return '<a' + (cls ? ' class="' + cls + '"' : "") + ' href="' + esc(url) + '" target="_blank" rel="noopener">' + text + '</a>';
+  }
+
+  // 賽事頁是獨立的賽事資訊網：上方列放賽事名稱與段落導覽，從個人首頁點進來時才顯示「← Home」
   function eventsHTML(s) {
-    var e = eventInfo(), sched = rows("EventSchedule");
-    var name = loc(e, "name"), poster = e.poster_url;
+    var e = eventInfo(), name = loc(e, "name"), poster = e.poster_url;
     var dateText = loc(e, "date_text") || [e.start_date, e.end_date].filter(Boolean).join(" – ");
-    var days = daysUntil(e.start_date);
+    var days = daysUntil(e.start_date), reg = daysUntil(e.register_deadline), closed = reg != null && reg < 0;
     var btns = [];
-    if (e.register_url) btns.push('<a class="primary" href="' + esc(e.register_url) + '" target="_blank" rel="noopener">' + esc(tr("register")) + ' ↗</a>');
-    if (e.rules_url) btns.push('<a href="' + esc(e.rules_url) + '" target="_blank" rel="noopener">' + esc(tr("rules")) + ' ↗</a>');
-    if (e.website) btns.push('<a href="' + esc(e.website) + '" target="_blank" rel="noopener">' + esc(tr("website")) + ' ↗</a>');
-    if (e.instagram) btns.push('<a href="' + esc(e.instagram) + '" target="_blank" rel="noopener">Instagram ↗</a>');
-    if (e.contact_email) btns.push('<a href="mailto:' + esc(e.contact_email) + '">' + esc(tr("contact")) + '</a>');
-    var facts = [[tr("date"), dateText], [tr("venue"), loc(e, "venue")], [tr("role"), loc(e, "my_role")]]
+    if (e.register_url) btns.push(closed ? '<span class="closed">' + esc(tr("regClosed")) + '</span>' : ext(e.register_url, esc(tr("register")) + " ↗", "primary"));
+    if (e.rules_url) btns.push(ext(e.rules_url, esc(tr("rules")) + " ↗"));
+    if (e.website) btns.push(ext(e.website, esc(tr("website")) + " ↗"));
+    if (e.instagram) btns.push(ext(e.instagram, "Instagram ↗"));
+    var facts = [[tr("date"), dateText], [tr("venue"), loc(e, "venue")]]
       .filter(function (f) { return f[1]; }).map(function (f) { return '<span><b>' + esc(f[0]) + '</b>' + esc(f[1]) + '</span>'; }).join("");
+    var badges = [];
+    if (days != null && days >= 0) badges.push('<span class="countdown">' + esc(days === 0 ? tr("today") : tr("daysToGo")(days)) + '</span>');
+    // 報名截止後，報名按鈕本身會換成「報名已截止」，這裡就不再重複
+    if (reg != null && !closed && e.register_url) badges.push('<span class="countdown soft">' + esc(reg === 0 ? tr("regToday") : tr("regLeft")(reg)) + '</span>');
 
     var hero = '<section class="event-hero' + (poster ? "" : " no-poster") + '"><div class="wrap event-hero-inner"><div>'
-      + '<div class="kicker">' + esc(tr("organizing")) + '</div>'
+      + (loc(e, "kicker") ? '<div class="kicker">' + esc(loc(e, "kicker")) + '</div>' : "")
       + '<h1>' + esc(name || tr("events")) + '</h1>'
       + (loc(e, "tagline") ? '<p class="tagline">' + esc(loc(e, "tagline")) + '</p>' : (name ? "" : '<p class="tagline">' + esc(tr("eventSoon")) + '</p>'))
       + (facts ? '<div class="facts">' + facts + '</div>' : "")
-      + (days != null && days >= 0 ? '<div class="countdown">' + esc(days === 0 ? tr("today") : tr("daysToGo")(days)) + '</div>' : "")
+      + (badges.length ? '<div class="badges">' + badges.join("") + '</div>' : "")
       + (btns.length ? '<div class="links">' + btns.join("") + '</div>' : "")
       + '</div>' + (poster ? '<div class="poster"><img src="' + esc(imgUrl(poster, 1200)) + '" data-full="' + esc(imgUrl(poster, 2000)) + '" alt="' + esc(name) + '"></div>' : "")
       + '</div></section>';
 
-    return topbar() + hero + '<div class="wrap events">' + eventSections(e, sched) + refereeHTML(s) + '</div>' + footer(s);
+    var secs = eventSections(s, e);
+    var tabs = secs.filter(function (x) { return x.title; })
+      .map(function (x) { return '<a data-scroll="' + x.id + '">' + esc(x.title) + '</a>'; }).join("");
+    var left = cameFromHome ? '<a class="back" data-go="home">' + esc(tr("home")) + '</a>'
+      : '<a class="ev-brand" data-scroll="top">' + esc(loc(e, "short_name") || name || tr("events")) + '</a>';
+    return '<nav class="topbar"><div class="wrap topbar-inner">' + left + '<div class="tabs">' + tabs + '</div>' + langBtn() + '</div></nav>'
+      + hero + '<div class="wrap events">'
+      + secs.map(function (x) { return (x.title ? '<h2 id="' + x.id + '">' + esc(x.title) + '</h2>' : '<div id="' + x.id + '"></div>') + x.html; }).join("")
+      + refereeHTML(s) + '</div>'
+      + '<footer><div class="wrap">© ' + new Date().getFullYear() + " " + esc(loc(e, "short_name") || name || "")
+      + ' · ' + esc(tr("siteBy")) + ' <a data-go="home">' + esc(names(s)[0] || "") + '</a></div></footer>';
   }
 
-  // EventSections 分頁由上而下決定段落順序；type 留空是文字段落，teams／schedule 會放入隊伍名單與賽程
-  function eventSections(e, sched) {
+  // EventSections 分頁由上而下決定段落順序。type：留空＝文字段落，
+  // news＝最新公告、teams＝報名隊伍、schedule＝賽程、docs＝檔案下載、contact＝聯絡資訊、organizers＝主辦單位
+  var SECTION_TYPES = {
+    news: function () { return newsHTML(); }, teams: function () { return teamsHTML(); },
+    schedule: function () { return scheduleHTML(); }, docs: function () { return docsHTML(); },
+    contact: function (s, e) { return contactHTML(e); }, organizers: function (s, e) { return organizersHTML(s, e); }
+  };
+  function eventSections(s, e) {
     var list = rows("EventSections");
     if (!list.length) {
-      // 還沒建 EventSections 分頁時的預設內容
-      list = [{ type: "text", title: tr("eventAbout"), body: e.description || "", body_zh: e.description_zh || "" }, { type: "teams" }, { type: "schedule" }];
+      list = [{ type: "news" }, { type: "", title: tr("eventAbout"), body: e.description || "", body_zh: e.description_zh || "" },
+        { type: "teams" }, { type: "schedule" }, { type: "docs" }, { type: "contact" }, { type: "organizers" }];
     }
-    return list.map(function (r) {
-      var type = String(r.type || "text").trim().toLowerCase();
-      var title = loc(r, "title") || ({ teams: tr("teams"), schedule: tr("schedule") }[type] || "");
-      var inner = type === "teams" ? teamsHTML() : type === "schedule" ? scheduleHTML(sched) : textSection(r);
-      return inner ? (title ? '<h2>' + esc(title) + '</h2>' : "") + inner : "";
-    }).join("");
+    return list.map(function (r, i) {
+      var type = String(r.type || "").trim().toLowerCase();
+      var make = SECTION_TYPES[type];
+      var html = make ? make(s, e) : textSection(r);
+      return { id: "ev-" + i, title: loc(r, "title") || (make ? tr("sec_" + type) : ""), html: html };
+    }).filter(function (x) { return x.html; });
   }
   function textSection(r) {
     var body = loc(r, "body"), map = String(r.map || "").trim();
     return (body ? '<div class="event-desc">' + paragraphs(body) + '</div>' : "")
       + (map ? '<div class="map"><iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="' + esc(map) + '" src="https://maps.google.com/maps?q='
-        + encodeURIComponent(map) + '&output=embed"></iframe></div><p class="map-link"><a href="https://www.google.com/maps/search/?api=1&query='
-        + encodeURIComponent(map) + '" target="_blank" rel="noopener">' + esc(tr("openMap")) + '</a></p>' : "");
+        + encodeURIComponent(map) + '&output=embed"></iframe></div><p class="map-link">'
+        + ext("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(map), esc(tr("openMap"))) + '</p>' : "");
+  }
+  // 最新公告：pin 填 yes 的置頂，其餘照試算表順序（新的放上面）；超過 5 則的收合起來
+  function newsHTML() {
+    var list = rows("EventNews").filter(function (n) { return loc(n, "title"); });
+    if (!list.length) return "";
+    list = list.filter(function (n) { return yes(n.pin); }).concat(list.filter(function (n) { return !yes(n.pin); }));
+    var item = function (n) {
+      var body = loc(n, "body");
+      return '<li><span class="when">' + esc(loc(n, "date")) + '</span><div><span class="title">' + esc(loc(n, "title")) + '</span>'
+        + (yes(n.pin) ? '<span class="tag pin">' + esc(tr("pinned")) + '</span>' : "")
+        + (body ? '<div class="news-body">' + paragraphs(body) + '</div>' : "")
+        + (n.url ? '<span class="meta">' + ext(n.url, esc(tr("readMore"))) + '</span>' : "") + '</div></li>';
+    };
+    var shown = list.slice(0, 5), more = list.slice(5);
+    return '<ul class="list news">' + shown.map(item).join("") + '</ul>'
+      + (more.length ? '<details class="more-news"><summary>' + esc(tr("moreNews")(more.length)) + '</summary><ul class="list news">' + more.map(item).join("") + '</ul></details>' : "");
   }
   function teamsHTML() {
-    var groups = groupBy(rows("EventTeams").filter(function (t) { return loc(t, "team"); }), "division");
+    // 用 division 或 division_zh 分組，只填其中一欄也能正確分組
+    var groups = groupBy(rows("EventTeams").filter(function (t) { return loc(t, "team"); })
+      .map(function (t) { return Object.assign({ _group: t.division || t.division_zh || "" }, t); }), "_group");
     if (!groups.length) return "";
     return '<div class="teams">' + groups.map(function (g) {
       return '<div class="division"><div class="division-head"><b>' + esc(loc(g.items[0], "division")) + '</b><span>' + esc(tr("teamCount")(g.items.length)) + '</span></div>'
@@ -719,15 +799,48 @@ var DATA = {
           }).join("") + '</ol></div>';
     }).join("") + '</div>';
   }
-  function scheduleHTML(sched) {
+  // 賽程依日期分組；court（場地）、result（比數）選填
+  function scheduleHTML() {
+    var sched = rows("EventSchedule").filter(function (r) { return loc(r, "item"); });
     if (!sched.length) return "";
-    return groupBy(sched, "date").map(function (d) {
+    sched = sched.map(function (r) { return Object.assign({ _group: r.date || r.date_zh || "" }, r); });
+    return groupBy(sched, "_group").map(function (d) {
       return (d.key ? '<h3>' + esc(loc(d.items[0], "date")) + '</h3>' : "") + '<ul class="list schedule">' + d.items.map(function (r) {
-        var note = loc(r, "note");
+        var meta = [loc(r, "court"), loc(r, "note")].filter(Boolean).map(esc).join(" · ");
         return '<li><span class="when">' + esc(r.time || "") + '</span><span><span class="title">' + esc(loc(r, "item")) + '</span>'
-          + (note ? '<span class="meta">' + esc(note) + '</span>' : "") + '</span></li>';
+          + (meta ? '<span class="meta">' + meta + '</span>' : "") + '</span>'
+          + '<span class="result">' + esc(loc(r, "result")) + '</span></li>';
       }).join("") + '</ul>';
     }).join("");
+  }
+  function docsHTML() {
+    var list = rows("EventDocs").filter(function (d) { return loc(d, "name") && d.url; });
+    if (!list.length) return "";
+    return '<div class="docs">' + list.map(function (d) {
+      var note = loc(d, "note");
+      return ext(d.url, '<span><b>' + esc(loc(d, "name")) + '</b>' + (note ? '<small>' + esc(note) + '</small>' : "") + '</span><i>↓</i>', "doc");
+    }).join("") + '</div>';
+  }
+  function kv(pairs) {
+    pairs = pairs.filter(function (p) { return p[1]; });
+    return pairs.length ? '<dl class="kv">' + pairs.map(function (p) { return '<dt>' + esc(p[0]) + '</dt><dd>' + p[1] + '</dd>'; }).join("") + '</dl>' : "";
+  }
+  function contactHTML(e) {
+    return kv([
+      [tr("contactName"), esc(loc(e, "contact_name"))],
+      ["Email", e.contact_email ? '<a href="mailto:' + esc(e.contact_email) + '">' + esc(e.contact_email) + '</a>' : ""],
+      [tr("phone"), e.phone ? '<a href="tel:' + esc(String(e.phone).replace(/[^\d+]/g, "")) + '">' + esc(e.phone) + '</a>' : ""],
+      ["LINE", e.line_url ? ext(e.line_url, esc(loc(e, "line_name") || e.line_url)) : ""],
+      ["Instagram", e.instagram ? ext(e.instagram, esc(loc(e, "instagram_handle") || e.instagram)) : ""]
+    ]);
+  }
+  function organizersHTML(s, e) {
+    return kv([
+      [tr("organizer"), esc(loc(e, "organizer"))],
+      [tr("coOrganizer"), esc(loc(e, "co_organizer"))],
+      [tr("sponsor"), esc(loc(e, "sponsor"))],
+      [loc(e, "my_role"), loc(e, "my_role") ? esc(names(s)[0] || "") : ""]
+    ]);
   }
   // 裁判紀錄：Settings 的 show_referee 填 yes 才顯示
   function refereeHTML(s) {
@@ -745,9 +858,12 @@ var DATA = {
 
   /* ---------- 繪製與路由 ---------- */
   var BUILD = { home: homeHTML, academic: academicHTML, photography: photographyHTML, events: eventsHTML };
+  // 賽事可用自訂網址，例如 #ujcup（Event 分頁的 slug）
+  function eventSlug() { return String(eventInfo().slug || "").trim().toLowerCase(); }
   function parseHash() {
     var h = (location.hash || "").replace(/^#/, "").split("/");
     var v = OLD[h[0]] || h[0];
+    if (eventSlug() && h[0].toLowerCase() === eventSlug()) v = "events";
     return { view: VIEWS.indexOf(v) >= 0 ? v : "home", album: v === "photography" && h[1] !== undefined && h[1] !== "" ? +h[1] : null };
   }
   function render() {
@@ -760,14 +876,15 @@ var DATA = {
       el.classList.toggle("active", v === route.view);
     });
     var n = names(s).join(" ");
-    document.title = route.view === "home" ? n : tr(route.view) + " · " + n;
+    var ev = route.view === "events" && loc(eventInfo(), "name");
+    document.title = route.view === "home" ? n : ev || tr(route.view) + " · " + n;
   }
   function go(view, album, push) {
     route = { view: view, album: album == null ? null : album };
     render();
     try { window.scrollTo({ top: 0, behavior: "instant" }); } catch (e) { window.scrollTo(0, 0); }
     if (push !== false) {
-      var h = "#" + view + (album != null ? "/" + album : "");
+      var h = "#" + (view === "events" && eventSlug() ? eventSlug() : view) + (album != null ? "/" + album : "");
       try { history.pushState(null, "", view === "home" ? location.pathname : h); } catch (e) {}
     }
   }
@@ -870,7 +987,7 @@ var DATA = {
       e.preventDefault();
       var view = t.getAttribute("data-go");
       if (view === "home") closePortal();
-      else if (route.view === "home") openPortal(t.querySelector(".ring") || t, view);
+      else if (route.view === "home") { cameFromHome = true; openPortal(t.querySelector(".ring") || t, view); }
       else go(view);
       return;
     }
@@ -881,6 +998,7 @@ var DATA = {
       return;
     }
     if ((t = e.target.closest("[data-scroll]"))) {
+      if (t.getAttribute("data-scroll") === "top") { window.scrollTo({ top: 0, behavior: "smooth" }); return; }
       var sec = document.getElementById(t.getAttribute("data-scroll"));
       if (sec) window.scrollTo({ top: sec.getBoundingClientRect().top + scrollY - 70, behavior: "smooth" });
       return;
@@ -896,7 +1014,7 @@ var DATA = {
   // 分頁不存在時 Google 會改回傳第一個分頁，所以用「必須有的欄位」確認讀到的是對的分頁
   var TABS = {
     Settings: "key", Projects: "title", Columns: "title", Teaching: "course", Referee: "event", Photos: "title",
-    Event: "field", EventSections: "type", EventTeams: "team", EventSchedule: "item", PhotoFiles: "file_id"
+    Event: "field", EventSections: "type", EventTeams: "team", EventSchedule: "item", EventNews: "title", EventDocs: "url", PhotoFiles: "file_id"
   };
   function fetchTab(name) {
     var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&headers=1&sheet=" + encodeURIComponent(name);
@@ -926,6 +1044,7 @@ var DATA = {
       names_.forEach(function (t, i) { if (res[i]) { got[t] = res[i]; any = true; } });
       if (!any) { console.warn("[site] 試算表讀不到，使用內建內容"); return; }
       D = Object.assign({}, D, got);
+      if (route.view === "home" && location.hash) route = parseHash();
       render();
     });
   }
