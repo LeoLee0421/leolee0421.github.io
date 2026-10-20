@@ -472,9 +472,11 @@ var DATA = {
   var cameFromHome = false;   // 從個人首頁點進賽事頁時才顯示「← Home」
 
   /* ---------- 語言 ---------- */
-  var lang = "en";
-  try { lang = localStorage.getItem("lang") || "en"; } catch (e) {}
-  if (lang !== "zh") lang = "en";
+  // 訪客自己切換過語言就照他的選擇；沒選過的話，賽事頁預設中文、其他頁預設英文
+  var chosenLang = null;
+  try { chosenLang = localStorage.getItem("lang"); } catch (e) {}
+  if (chosenLang !== "zh" && chosenLang !== "en") chosenLang = null;
+  var lang = chosenLang || "en";
   var TEXT = {
     en: {
       toggle: "中文", home: "← Home", explore: "Explore",
@@ -958,6 +960,7 @@ var DATA = {
     return { view: VIEWS.indexOf(v) >= 0 ? v : "home", album: v === "photography" && h[1] !== undefined && h[1] !== "" ? +h[1] : null };
   }
   function render() {
+    if (!chosenLang) lang = route.view === "events" ? "zh" : "en";
     var s = settings();
     document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
     VIEWS.forEach(function (v) {
@@ -1069,7 +1072,7 @@ var DATA = {
   document.addEventListener("click", function (e) {
     var t;
     if ((t = e.target.closest("[data-lang]"))) {
-      lang = lang === "zh" ? "en" : "zh";
+      lang = chosenLang = lang === "zh" ? "en" : "zh";
       try { localStorage.setItem("lang", lang); } catch (err) {}
       render();
       return;
