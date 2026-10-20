@@ -248,6 +248,7 @@
   .ev-btn:hover{ background:var(--ev-blue); color:#fff !important; }
   .ev-btn.primary{ background:var(--ev-yellow); border-color:var(--ev-yellow); color:var(--ev-ink) !important; }
   .ev-btn.primary:hover{ filter:brightness(.95); }
+  .ev-btn.sm{ font-size:14px; padding:5px 16px; border-radius:6px; margin:2px 0; vertical-align:middle; }
   .ev-btn.off{ border-color:var(--ev-line); color:var(--ev-muted) !important; background:#F4F5F7; cursor:default; }
 
   /* 各段落 */
@@ -493,6 +494,7 @@ var DATA = {
       moreNews: function (n) { return "Earlier announcements (" + n + ")"; },
       regLeft: function (n) { return n === 1 ? "Registration closes in 1 day" : "Registration closes in " + n + " days"; },
       regToday: "Registration closes today", regClosed: "Registration closed", siteBy: "Website by",
+      registerNow: "Register Now ↗", openLink: "Open link",
       divisions: "Divisions", fee: "Entry fee", deadline: "Registration deadline",
       contactName: "Contact person", phone: "Phone", organizer: "Organizer", coOrganizer: "Co-organizer", sponsor: "Sponsors",
       teamCount: function (n) { return n === 1 ? "1 team" : n + " teams"; },
@@ -517,6 +519,7 @@ var DATA = {
       moreNews: function (n) { return "更早的公告（" + n + "）"; },
       regLeft: function (n) { return "報名截止倒數 " + n + " 天"; },
       regToday: "今天報名截止", regClosed: "報名已截止", siteBy: "網站製作",
+      registerNow: "立即報名 ↗", openLink: "開啟連結",
       divisions: "比賽組別", fee: "報名費", deadline: "報名截止",
       contactName: "聯絡人", phone: "電話", organizer: "主辦單位", coOrganizer: "協辦單位", sponsor: "贊助單位",
       teamCount: function (n) { return n + " 隊"; },
@@ -828,13 +831,30 @@ var DATA = {
     return list.map(function (r, i) {
       var type = String(r.type || "").trim().toLowerCase();
       var make = SECTION_TYPES[type];
-      var html = make ? make(s, e) : textSection(r);
+      var html = make ? make(s, e) : textSection(r, e);
       return { id: "ev-" + i, title: loc(r, "title") || (make ? tr("sec_" + type) : ""), html: html };
     }).filter(function (x) { return x.html; });
   }
-  function textSection(r) {
+  // 文字段落裡的網址會變成按鈕：Google 表單顯示「立即報名 ↗」（報名截止後變灰），其他連結用網址前面的文字當按鈕名稱
+  function linkParagraphs(text, e) {
+    var closed = (daysUntil(e.register_deadline) || 0) < 0;
+    return String(text || "").split(/\n/).filter(function (p) { return p.trim(); }).map(function (line) {
+      var html = "", last = 0, m, re = /https?:\/\/[^\s，。、）)]+/g;
+      while ((m = re.exec(line))) {
+        var before = line.slice(last, m.index), url = m[0];
+        var label = before.replace(/^\s*\d+[.、)]\s*/, "").replace(/[：:\s]+$/, "");
+        var btn = /docs\.google\.com\/forms|forms\.gle/.test(url)
+          ? (closed ? '<span class="ev-btn sm off">' + esc(tr("regClosed")) + '</span>' : ext(url, esc(tr("registerNow")), "ev-btn sm primary"))
+          : ext(url, esc((label || tr("openLink")) + " ↗"), "ev-btn sm");
+        html += esc(before) + btn;
+        last = m.index + url.length;
+      }
+      return '<p>' + html + esc(line.slice(last)) + '</p>';
+    }).join("");
+  }
+  function textSection(r, e) {
     var body = loc(r, "body"), map = String(r.map || "").trim();
-    return (body ? '<div class="ev-text">' + paragraphs(body) + '</div>' : "")
+    return (body ? '<div class="ev-text">' + linkParagraphs(body, e) + '</div>' : "")
       + (map ? '<div class="map"><iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="' + esc(map) + '" src="https://maps.google.com/maps?q='
         + encodeURIComponent(map) + '&output=embed"></iframe></div><p class="map-link">'
         + ext("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(map), esc(tr("openMap"))) + '</p>' : "");
