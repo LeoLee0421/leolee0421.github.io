@@ -7,7 +7,7 @@
  * 自動更新：在 Apps Script 執行一次 installDailyTrigger，之後每天會自動更新。
  */
 
-var MAX_PER_ALBUM = 500;   // 每個資料夾最多記幾張
+var MAX_PER_ALBUM = 1500;  // 每個資料夾最多記幾張
 var SUBFOLDER_DEPTH = 2;   // 往下讀幾層子資料夾
 
 function onOpen() {
