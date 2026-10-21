@@ -265,6 +265,12 @@
   .ev-text p{ margin:0 0 10px; line-height:1.8; }
   .ev .lead{ max-width:none; }
   .ev-text p:last-child{ margin-bottom:0; }
+  .ev-figs{ display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; }
+  .ev-text + .ev-figs{ margin-top:20px; }
+  .ev-figs figure{ margin:0; }
+  .ev-figs img{ width:100%; height:auto; border-radius:6px; border:1px solid var(--ev-line); cursor:zoom-in; transition:transform .2s; }
+  .ev-figs img:hover{ transform:translateY(-3px); }
+  .ev-figs figcaption{ font-size:14px; font-weight:700; text-align:center; margin-top:8px; }
 
   .ev-news{ display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:16px; }
   .ev-post{ border:1px solid var(--ev-line); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; background:#fff; }
@@ -350,6 +356,7 @@
     .ev-facts{ grid-template-columns:1fr 1fr; }
     .ev-btn{ flex:1; text-align:center; }
     .ev-body h2{ font-size:20px; }
+    .ev-figs{ grid-template-columns:1fr 1fr; gap:12px; }
     .schedule li{ grid-template-columns:56px 1fr auto; gap:10px; }
     .kv{ grid-template-columns:1fr; gap:2px; }
     .kv dd{ margin-bottom:10px; }
@@ -469,6 +476,7 @@ var DATA = {
   var FX_COLOR = { academic: "#1E3A5F", photography: "#0F1012", events: "#2A1A14" };
   var D = Object.assign({ Event: [], EventSections: [], EventTeams: [], EventSchedule: [], EventNews: [], EventDocs: [], PhotoFiles: [] }, DATA);
   var route = { view: "home", album: null };
+  var LABELS = {};   // 各分頁欄位的原始名稱（大小寫不變），圖片說明用；讀到試算表時填入
   var cameFromHome = false;   // 從個人首頁點進賽事頁時才顯示「← Home」
 
   /* ---------- 語言 ---------- */
@@ -807,7 +815,7 @@ var DATA = {
       : '<a class="ev-brand" data-scroll="top">' + esc(short) + '</a>';
 
     return '<div class="ev" style="' + colors + '">'
-      + '<nav class="ev-nav"><div class="wrap ev-nav-inner">' + left + '<div class="ev-tabs">' + tabs + '</div>' + langBtn() + '</div></nav>'
+      + '<nav class="ev-nav"><div class="wrap ev-nav-inner">' + left + '<div class="ev-tabs">' + tabs + '</div></div></nav>'
       + '<header class="ev-hero">' + visual + '</header>' + summary
       + '<main class="wrap ev-body">'
       + secs.map(function (x) { return '<section class="ev-card" id="' + x.id + '">' + (x.title ? '<h2>' + esc(x.title) + '</h2>' : "") + x.html + '</section>'; }).join("")
@@ -854,9 +862,20 @@ var DATA = {
       return '<p>' + html + esc(line.slice(last)) + '</p>';
     }).join("");
   }
+  // 文字段落右邊多加的欄位（欄名自訂，例如「男子組預賽」）填圖片連結，就會以圖片顯示，欄名當圖說
+  var SECTION_COLS = { type: 1, title: 1, title_zh: 1, title_en: 1, body: 1, body_zh: 1, body_en: 1, map: 1, hide: 1 };
+  function sectionFigures(r) {
+    var figs = Object.keys(r).filter(function (k) { return !SECTION_COLS[k] && /^https?:\/\//.test(r[k]); });
+    if (!figs.length) return "";
+    return '<div class="ev-figs">' + figs.map(function (k) {
+      var cap = (LABELS.EventSections || {})[k] || k;
+      return '<figure><img loading="lazy" src="' + esc(imgUrl(r[k], 900)) + '" data-full="' + esc(imgUrl(r[k], 2400)) + '" alt="' + esc(cap) + '">'
+        + '<figcaption>' + esc(cap) + '</figcaption></figure>';
+    }).join("") + '</div>';
+  }
   function textSection(r, e) {
     var body = loc(r, "body"), map = String(r.map || "").trim();
-    return (body ? '<div class="ev-text">' + linkParagraphs(body, e) + '</div>' : "")
+    return (body ? '<div class="ev-text">' + linkParagraphs(body, e) + '</div>' : "") + sectionFigures(r)
       + (map ? '<div class="map"><iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="' + esc(map) + '" src="https://maps.google.com/maps?q='
         + encodeURIComponent(map) + '&output=embed"></iframe></div><p class="map-link">'
         + ext("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(map), esc(tr("openMap"))) + '</p>' : "");
@@ -960,7 +979,8 @@ var DATA = {
     return { view: VIEWS.indexOf(v) >= 0 ? v : "home", album: v === "photography" && h[1] !== undefined && h[1] !== "" ? +h[1] : null };
   }
   function render() {
-    if (!chosenLang) lang = route.view === "events" ? "zh" : "en";
+    // 賽事頁全中文、不提供語言切換；其他頁照訪客的選擇，沒選過就是英文
+    lang = route.view === "events" ? "zh" : (chosenLang || "en");
     var s = settings();
     document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
     VIEWS.forEach(function (v) {
@@ -1044,7 +1064,7 @@ var DATA = {
     box.querySelector(".prev").style.display = box.querySelector(".next").style.display = boxList.length > 1 ? "" : "none";
   }
   function boxOpen(img) {
-    var group = img.closest(".masonry");
+    var group = img.closest(".masonry, .ev-figs");
     var imgs = group ? [].slice.call(group.querySelectorAll("img")) : [img];
     boxList = imgs.map(function (x) { return x.getAttribute("data-full") || x.src; });
     box.classList.add("open");
@@ -1097,7 +1117,7 @@ var DATA = {
       if (sec) window.scrollTo({ top: sec.getBoundingClientRect().top + scrollY - 70, behavior: "smooth" });
       return;
     }
-    if ((t = e.target.closest(".masonry img, .ev-hero .stage img"))) boxOpen(t);
+    if ((t = e.target.closest(".masonry img, .ev-figs img, .ev-hero .stage img"))) boxOpen(t);
   });
   window.addEventListener("popstate", function () { var r = parseHash(); go(r.view, r.album, false); });
 
@@ -1117,6 +1137,8 @@ var DATA = {
       var j = JSON.parse(txt.slice(start + 1, end));
       if (j.status === "error" || !j.table) return null;
       var cols = j.table.cols.map(function (c) { return String(c.label || "").trim().toLowerCase(); });
+      LABELS[name] = {};
+      j.table.cols.forEach(function (c, i) { if (cols[i]) LABELS[name][cols[i]] = String(c.label).trim(); });
       if (cols.indexOf(TABS[name]) < 0) return null;
       return (j.table.rows || []).map(function (row) {
         var o = {};
